@@ -389,6 +389,5 @@ public/           personagens e sons
 
 ## Licença
 
-Copyright (c) 2026 [vitorcgo](https://github.com/vitorcgo). Todos os direitos reservados.
+Copyright (c) 2026 [Henrique](github.com). Todos os direitos reservados.
 
-Este código está público apenas para consulta. **Não é código aberto.** É proibido usar o Niko para fins comerciais, vender, redistribuir, modificar, criar obras derivadas ou reaproveitar qualquer parte dele sem autorização por escrito do autor. Os termos completos estão em [LICENSE.md](LICENSE.md).

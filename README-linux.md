@@ -208,6 +208,6 @@ src-tauri/
 
 ## Licença
 
-Copyright (c) 2026 [vitorcgo](https://github.com/vitorcgo). Todos os direitos reservados.
+Copyright (c) 2026 [henrique](https://github.com/). Todos os direitos reservados.
 
 O código é público apenas para consulta e **não é código aberto**. Esta adaptação não altera a licença: modificar, redistribuir ou publicar qualquer parte depende de autorização por escrito do autor. Os termos completos estão em [LICENSE.md](LICENSE.md).

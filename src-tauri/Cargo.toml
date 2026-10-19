@@ -2,7 +2,7 @@
 name = "niko"
 version = "0.2.5"
 description = "Niko"
-authors = ["vitorcgo"]
+authors = ["henrique"]
 edition = "2021"
 
 [lib]
