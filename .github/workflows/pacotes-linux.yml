@@ -3,6 +3,12 @@ name: Pacotes Linux
 on:
   release:
     types: [published]
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag da release onde anexar os pacotes"
+        required: true
+        type: string
   workflow_dispatch:
 
 permissions:
@@ -62,12 +68,14 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
 
+      # Chamado pelo workflow Publicar versão, inputs.tag traz a release recém-criada;
+      # no evento release, ela vem do próprio evento. No disparo manual não há onde anexar.
       - name: Anexar na release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || inputs.tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" --repo "${{ github.repository }}" --clobber \
+          gh release upload "${{ inputs.tag || github.event.release.tag_name }}" --repo "${{ github.repository }}" --clobber \
             src-tauri/target/release/bundle/deb/*.deb \
             src-tauri/target/release/bundle/rpm/*.rpm \
             src-tauri/target/release/bundle/appimage/*.AppImage

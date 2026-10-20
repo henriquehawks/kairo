@@ -1,0 +1,98 @@
+name: Publicar versão
+
+# Empurre a tag (git tag v0.2.6 && git push origin v0.2.6) e este workflow faz o
+# resto: confere, builda os instaladores do Windows assinados com a chave de
+# atualização, cria a release com os três arquivos e chama o workflow dos
+# pacotes Linux para anexar .deb, .rpm e AppImage na mesma release.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: "Versão sem o v, por exemplo 0.2.6"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Instaladores do Windows
+    runs-on: windows-latest
+    outputs:
+      tag: v${{ steps.versao.outputs.numero }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Versão e notas
+        id: versao
+        shell: bash
+        run: |
+          numero="${{ inputs.versao }}"
+          if [ -z "$numero" ]; then numero="${GITHUB_REF_NAME#v}"; fi
+          notas="docs/releases/$numero.md"
+          if [ ! -f "$notas" ]; then
+            echo "Faltam as notas da versão em $notas" >&2
+            exit 1
+          fi
+          echo "numero=$numero" >> "$GITHUB_OUTPUT"
+          echo "notas=$notas" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Tipos
+        run: pnpm verificar
+
+      - name: Testes
+        run: pnpm test
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # A chave é a mesma de todas as versões anteriores. Trocá-la deixa quem já
+      # tem o app sem conseguir validar a atualização.
+      - name: Build assinado
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: pnpm lancar ${{ steps.versao.outputs.numero }} --notas-arquivo ${{ steps.versao.outputs.notas }}
+
+      - name: Publicar a release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          versao="${{ steps.versao.outputs.numero }}"
+          gh release create "v$versao" \
+            "src-tauri/target/release/bundle/nsis/Kairo_${versao}_x64-setup.exe" \
+            "src-tauri/target/release/bundle/msi/Kairo_${versao}_x64_pt-BR.msi" \
+            "src-tauri/target/release/bundle/nsis/latest.json" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Kairo $versao" \
+            --notes-file "${{ steps.versao.outputs.notas }}"
+
+  linux:
+    name: Pacotes Linux
+    needs: windows
+    permissions:
+      contents: write
+    uses: ./.github/workflows/pacotes-linux.yml
+    with:
+      tag: ${{ needs.windows.outputs.tag }}
