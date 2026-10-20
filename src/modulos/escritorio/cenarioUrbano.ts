@@ -35,7 +35,7 @@ export function patioUrbano(slot: number, ultimaColuna: boolean): SlotShell {
   return { ...patio, props: patio.props.filter((p) => p.kind !== "tree" && p.kind !== "pine" && p.kind !== "rock") };
 }
 
-/** Fachadas originais do Niko, desenhadas pixel a pixel, com cinco lojas distintas. */
+/** Fachadas originais do Kairo, desenhadas pixel a pixel, com cinco lojas distintas. */
 export function pixelsDaLoja(variante: number) {
   const indice = ((Math.floor(variante) % 5) + 5) % 5;
   const paredes = ["#d8c3a0", "#c3cad4", "#c4b8a7", "#b5c4c2", "#cfb5af"];

@@ -38,7 +38,7 @@ export async function autorizarGoogle(clienteId: string, segredo: string, escopo
       }
       const ok = Boolean(codigoRecebido);
       res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-      res.end(`<!doctype html><meta charset="utf-8"><title>Niko</title><body style="font-family:system-ui;padding:40px;background:#0e0e10;color:#f1f2f4"><h2>${ok ? `${servico} conectado.` : "Não deu certo."}</h2><p>${ok ? "Pode fechar esta aba e voltar ao Niko." : "Volte ao Niko e tente de novo."}</p></body>`);
+      res.end(`<!doctype html><meta charset="utf-8"><title>Kairo</title><body style="font-family:system-ui;padding:40px;background:#0e0e10;color:#f1f2f4"><h2>${ok ? `${servico} conectado.` : "Não deu certo."}</h2><p>${ok ? "Pode fechar esta aba e voltar ao Kairo." : "Volte ao Kairo e tente de novo."}</p></body>`);
       clearTimeout(relogio);
       servidor.close();
       if (ok) resolver({ codigo: codigoRecebido!, redirecionamento: `http://127.0.0.1:${(servidor.address() as AddressInfo | null)?.port ?? porta}` });

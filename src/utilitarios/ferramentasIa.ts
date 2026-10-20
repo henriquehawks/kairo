@@ -202,7 +202,7 @@ const FERRAMENTAS: FerramentaNiko[] = [
   {
     definicao: {
       nome: "consultar_banco",
-      descricao: `Lê qualquer parte do banco de dados do Niko. Áreas: ${Object.keys(AREAS_BANCO).join(", ")}. Filtre por texto (busca) e por período (de, ate) quando fizer sentido. Valores em reais. Use para perguntas que as outras ferramentas ler_* não cobrem, como histórico, diário, anotações, cartões, links, transações antigas e sessões de foco.`,
+      descricao: `Lê qualquer parte do banco de dados do Kairo. Áreas: ${Object.keys(AREAS_BANCO).join(", ")}. Filtre por texto (busca) e por período (de, ate) quando fizer sentido. Valores em reais. Use para perguntas que as outras ferramentas ler_* não cobrem, como histórico, diário, anotações, cartões, links, transações antigas e sessões de foco.`,
       parametros: {
         type: "object",
         properties: {
@@ -459,7 +459,7 @@ const FERRAMENTAS: FerramentaNiko[] = [
   },  {
     definicao: {
       nome: "abrir_tela",
-      descricao: "Abre uma tela do Niko para o usuário.",
+      descricao: "Abre uma tela do Kairo para o usuário.",
       parametros: { type: "object", properties: { tela: { type: "string", enum: TELAS } }, required: ["tela"] },
     },
     executar: (a) => {

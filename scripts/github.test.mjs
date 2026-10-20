@@ -19,7 +19,7 @@ const { lerCommitsGithub } = await vite.ssrLoadModule("/servidor/github.ts");
 const { CommitsGithub } = await vite.ssrLoadModule("/src/modulos/conexoes/CommitsGithub.tsx");
 
 const commit = (alteracoes = {}) => ({
-  sha: "a".repeat(40), repository: { full_name: "teste/Niko", private: false },
+  sha: "a".repeat(40), repository: { full_name: "teste/Kairo", private: false },
   author: { login: "teste" }, html_url: "https://malicioso.example/nao-usar",
   commit: { message: "feat: organizar ilha\n\nDetalhes da alteração", author: { name: "Autor", email: "privado@example.test", date: "2026-10-09T18:00:00Z" }, committer: { date: "2026-10-10T18:00:00Z" } },
   ...alteracoes,
@@ -29,7 +29,7 @@ test("commits preservam mensagem, autor e repositório, ordenam por data e não 
   const antigo = commit({ sha: "b".repeat(40), commit: { message: "fix: corrigir", author: { name: "Outro", date: "2026-10-08T12:00:00Z" } } });
   const lista = normalizarCommitsGithub({ items: [antigo, commit(), commit()] });
   assert.equal(lista.length, 2);
-  assert.deepEqual(lista[0], { sha: "a".repeat(40), repo: "teste/Niko", titulo: "feat: organizar ilha", mensagem: "feat: organizar ilha\n\nDetalhes da alteração", autor: "teste", data: "2026-10-10T18:00:00.000Z", privado: false, url: `https://github.com/teste/Niko/commit/${"a".repeat(40)}` });
+  assert.deepEqual(lista[0], { sha: "a".repeat(40), repo: "teste/Kairo", titulo: "feat: organizar ilha", mensagem: "feat: organizar ilha\n\nDetalhes da alteração", autor: "teste", data: "2026-10-10T18:00:00.000Z", privado: false, url: `https://github.com/teste/Kairo/commit/${"a".repeat(40)}` });
   assert.doesNotMatch(JSON.stringify(lista), /privado@example|malicioso/);
 });
 
@@ -66,7 +66,7 @@ test("lista de commits oferece detalhes acessíveis e é compartilhada pela ilha
     assert.match(html, /<details[^]*<summary/);
     assert.match(html, /feat: organizar ilha/);
     assert.match(html, /Detalhes da alteração/);
-    assert.match(html, /teste\/Niko/);
+    assert.match(html, /teste\/Kairo/);
     assert.match(html, /Abrir commit no GitHub/);
     assert.match(html, /rel="noopener noreferrer"/);
   }
@@ -83,7 +83,7 @@ test("privacidade omite mensagens, autores, hashes e links dos commits", async (
   try {
     const html = renderToStaticMarkup(createElement(CommitsGithub, { commits: normalizarCommitsGithub({ items: [commit()] }) }));
     assert.match(html, /Commits ocultos pelo modo de privacidade/);
-    assert.doesNotMatch(html, /feat: organizar|teste\/Niko|aaaaaaaa|href=/);
+    assert.doesNotMatch(html, /feat: organizar|teste\/Kairo|aaaaaaaa|href=/);
   } finally { inicial.privacidade = anterior; }
 });
 
@@ -102,7 +102,7 @@ test("lista compacta limita os commits e a janela permite filtrar por mensagem, 
   const commits = normalizarCommitsGithub({ items: Array.from({ length: 12 }, (_, i) => commit({ sha: i.toString(16).padStart(40, "0") })) });
   const compacto = renderToStaticMarkup(createElement(CommitsGithub, { commits, compacto: true }));
   assert.equal((compacto.match(/<details /g) ?? []).length, 6);
-  for (const filtro of ["ORGANIZAR", "teste/Niko", "000000", "teste"]) {
+  for (const filtro of ["ORGANIZAR", "teste/Kairo", "000000", "teste"]) {
     const html = renderToStaticMarkup(createElement(CommitsGithub, { commits, filtro }));
     assert.equal((html.match(/<details /g) ?? []).length, 12);
   }

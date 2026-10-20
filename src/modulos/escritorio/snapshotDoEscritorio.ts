@@ -26,7 +26,7 @@ function membroLivre(id: string, nomes: Record<string, string>, desde: number): 
   };
 }
 
-/** Somente dados já recebidos pelo Niko. Não lê arquivos, inventa subagentes ou consulta contas. A equipe ociosa só passeia até uma sessão de verdade chegar. */
+/** Somente dados já recebidos pelo Kairo. Não lê arquivos, inventa subagentes ou consulta contas. A equipe ociosa só passeia até uma sessão de verdade chegar. */
 export function snapshotDoEscritorio(sessoes: SessaoClaude[], nomes: Record<string, string> = {}, demonstracao = false, agora = Date.now(), equipe: ReadonlyMap<string, string> = new Map(), desdeDaEquipe = agora): OfficeSnapshot {
   const salas = agruparSessoesDoEscritorio(sessoes);
   const ferramentas = [...new Set(sessoes.map((s) => s.ferramenta))];

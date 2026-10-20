@@ -157,7 +157,7 @@ export function attachInput(canvas: HTMLCanvasElement, camera: Camera, h: InputH
   };
 
   const onKey = (e: KeyboardEvent) => {
-    // Adaptação Niko: atalhos da câmera somente com foco no canvas.
+    // Adaptação Kairo: atalhos da câmera somente com foco no canvas.
     if (document.activeElement !== canvas) return;
     if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
     const t = e.target as HTMLElement | null;

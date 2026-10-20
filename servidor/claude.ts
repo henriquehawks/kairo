@@ -40,7 +40,7 @@ export const EVENTOS_INSTALADOS = [
 
 const CAMPOS_DESCARTADOS = ["tool_response", "tool_result", "transcript_path", "agent_transcript_path", "scratchpad_dir"];
 const FERRAMENTAS_QUE_DECIDEM = new Set<FerramentaDeCodigo>(["claude", "codex", "copilot"]);
-const MENSAGEM_DE_NEGACAO = "Negado pelo usuário no Niko.";
+const MENSAGEM_DE_NEGACAO = "Negado pelo usuário no Kairo.";
 
 export type FerramentaDeCodigo = "claude" | "copilot" | "codex" | "opencode" | "antigravity" | "kimi" | "gemini" | "amp";
 

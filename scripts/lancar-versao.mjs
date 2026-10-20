@@ -31,7 +31,7 @@ async function lancar() {
   const versao = opcoes.versao;
   validarTag(versao, tag);
   const plano = planejarVersao(raiz, versao);
-  const chave = join(homedir(), ".tauri", "niko-atualizacao.key");
+  const chave = join(homedir(), ".tauri", "kairo-atualizacao.key");
   const chaveConfigurada = process.env.TAURI_SIGNING_PRIVATE_KEY;
   if (!chaveConfigurada && !existsSync(chave)) throw new Error(`Chave de atualização não encontrada em ${chave}. Use a mesma chave das versões anteriores.`);
   if (!opcoes.recompilar) await verificarPublicacao(versao);
@@ -50,7 +50,7 @@ async function lancar() {
   const manifesto = montarManifesto(versao, notas, nsis, msi);
   writeFileSync(join(nsis.pasta, "latest.json"), JSON.stringify(manifesto, null, 2));
   if (opcoes.recompilar) console.log("Recompilação concluída. Isso não cria nem substitui uma release no GitHub.");
-  console.log(`\nPronto. Para a release v${versao} em github.com/vitorcgo/niko, os arquivos são:\n  ${join(nsis.pasta, nsis.instalador)}\n  ${join(msi.pasta, msi.instalador)}\n  ${join(nsis.pasta, "latest.json")}\nNada foi publicado automaticamente.`);
+  console.log(`\nPronto. Para a release v${versao} em github.com/henriquehawks/kairo, os arquivos são:\n  ${join(nsis.pasta, nsis.instalador)}\n  ${join(msi.pasta, msi.instalador)}\n  ${join(nsis.pasta, "latest.json")}\nNada foi publicado automaticamente.`);
 }
 
 try {

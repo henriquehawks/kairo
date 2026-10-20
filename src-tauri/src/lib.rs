@@ -219,7 +219,7 @@ fn abrir_lupa(app: &AppHandle) {
 
 fn criar_sobreposta(app: &AppHandle, rotulo: &str, y: f64, x: f64, largura: f64, altura: f64) -> tauri::Result<WebviewWindow> {
     WebviewWindowBuilder::new(app, rotulo, WebviewUrl::App("index.html".into()))
-        .title("Niko")
+        .title("Kairo")
         .transparent(true)
         .decorations(false)
         .shadow(false)
@@ -510,7 +510,7 @@ pub fn run() {
             };
 
             let sistema = WebviewWindowBuilder::new(app, "sistema", WebviewUrl::App("index.html".into()))
-                .title("Niko")
+                .title("Kairo")
                 .decorations(false)
                 .inner_size(1320.0_f64.min(mw - 40.0), 860.0_f64.min(mh - 40.0))
                 .min_inner_size(960.0_f64.min(mw - 16.0).max(640.0), 600.0_f64.min(mh - 16.0).max(420.0))
@@ -550,10 +550,10 @@ pub fn run() {
             docks::vigiar_monitores(handle.clone());
             vigiar_cursor(handle.clone());
 
-            let abrir = MenuItem::with_id(app, "abrir", "Abrir o Niko", true, None::<&str>)?;
+            let abrir = MenuItem::with_id(app, "abrir", "Abrir o Kairo", true, None::<&str>)?;
             let sair_item = MenuItem::with_id(app, "sair", "Sair", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&abrir, &sair_item])?;
-            let mut bandeja = TrayIconBuilder::with_id("niko").menu(&menu).show_menu_on_left_click(false).tooltip("Niko");
+            let mut bandeja = TrayIconBuilder::with_id("niko").menu(&menu).show_menu_on_left_click(false).tooltip("Kairo");
             if let Some(icone) = app.default_window_icon() {
                 bandeja = bandeja.icon(icone.clone());
             }
@@ -574,7 +574,7 @@ pub fn run() {
             Ok(())
         })
         .build(tauri::generate_context!())
-        .expect("falha ao iniciar o Niko");
+        .expect("falha ao iniciar o Kairo");
 
     app.run(|handle, evento| {
         if let RunEvent::Exit = evento {

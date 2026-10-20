@@ -30,8 +30,8 @@ export interface JanelaDaStatus {
 
 let ultimaStatus: { em: number; janelas: JanelaDaStatus[] } | null = null;
 
-/** O script que o Claude Code chama como status line: manda os dados para o Niko e depois roda a status line que a pessoa já tinha, com a mesma entrada. */
-export const SCRIPT_DA_STATUS = `// Gerado pelo Niko. Remova pelo Niko (aba Código > Claude Code).
+/** O script que o Claude Code chama como status line: manda os dados para o Kairo e depois roda a status line que a pessoa já tinha, com a mesma entrada. */
+export const SCRIPT_DA_STATUS = `// Gerado pelo Kairo. Remova pelo Kairo (aba Código > Claude Code).
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 

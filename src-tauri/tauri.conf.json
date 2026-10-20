@@ -1,8 +1,8 @@
 {
     "$schema":  "https://schema.tauri.app/config/2",
-    "productName":  "Niko",
+    "productName":  "Kairo",
     "version":  "0.2.5",
-    "identifier":  "com.niko.desktop",
+    "identifier":  "com.kairo.desktop",
     "build":  {
                   "frontendDist":  "../dist",
                   "devUrl":  "http://localhost:5420",
@@ -34,8 +34,8 @@
                                      "recursos/node.exe":  "recursos/node.exe",
                                      "recursos/ponte.mjs":  "recursos/ponte.mjs"
                                  },
-                   "publisher":  "vitorcgo",
-                   "shortDescription":  "Niko, seu sistema de vida para Windows",
+                   "publisher":  "henriquehawks",
+                   "shortDescription":  "Kairo, seu sistema de vida para Windows",
                    "windows":  {
                                    "nsis":  {
                                                 "installMode":  "currentUser",
@@ -47,16 +47,16 @@
                                             },
                                    "wix":  {
                                                "language":  "pt-BR",
-                                               "upgradeCode":  "ac8ba0fd-ee33-50ad-a11c-dd31ff03d717"
+                                               "upgradeCode":  "4c8e023d-542b-4775-bb95-a11d5051082d"
                                            }
                                },
                    "createUpdaterArtifacts":  true
                },
     "plugins":  {
                     "updater":  {
-                                    "pubkey":  "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ4NDg1ODRGQ0IyMThBOTgKUldTWWlpSExUMWhJU04zK0l4TUsxT0Z1aHkxQzVtOCtXZWZRd3pUZ3dYKzdOckhBay96OUFRczMK",
+                                    "pubkey":  "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY3QzU1QzM1MzUzOTkyQTgKUldTb2tqazFOVnpGOXlaVHlJOTdIYk1kNTZsV3o4SVNvZXVQeStwZW9CYXdFb3EydEkwRm5xbFEK",
                                     "endpoints":  [
-                                                      "https://github.com/vitorcgo/niko/releases/latest/download/latest.json"
+                                                      "https://github.com/henriquehawks/kairo/releases/latest/download/latest.json"
                                                   ],
                                     "windows":  {
                                                     "installMode":  "passive"

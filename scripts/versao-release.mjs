@@ -61,9 +61,9 @@ function localizarVersao(nome, conteudo) {
   } else {
     const blocos = conteudo.split(/(?=^\[)/m);
     const encontrados = nome.endsWith("Cargo.lock")
-      ? blocos.filter((b) => b.startsWith("[[package]]") && /^name\s*=\s*"niko"\s*$/m.test(b))
+      ? blocos.filter((b) => b.startsWith("[[package]]") && /^name\s*=\s*"kairo"\s*$/m.test(b))
       : blocos.filter((b) => b.startsWith("[package]"));
-    if (encontrados.length !== 1) throw new Error(`Não foi possível localizar o pacote Niko em ${nome}.`);
+    if (encontrados.length !== 1) throw new Error(`Não foi possível localizar o pacote Kairo em ${nome}.`);
     bloco = encontrados[0];
     padrao = /(^version\s*=\s*")([^"]+)(")/gm;
   }
@@ -160,8 +160,8 @@ export async function verificarPublicacao(versao, pedir = fetch) {
   validarVersao(versao);
   let resposta;
   try {
-    resposta = await pedir(`https://api.github.com/repos/vitorcgo/niko/releases/tags/v${versao}`, {
-      headers: { Accept: "application/vnd.github+json", "User-Agent": "Niko-release" },
+    resposta = await pedir(`https://api.github.com/repos/henriquehawks/kairo/releases/tags/v${versao}`, {
+      headers: { Accept: "application/vnd.github+json", "User-Agent": "Kairo-release" },
       signal: AbortSignal.timeout(15000),
     });
   } catch {
@@ -173,8 +173,8 @@ export async function verificarPublicacao(versao, pedir = fetch) {
 }
 
 export const INSTALADORES = {
-  nsis: (versao) => `Niko_${versao}_x64-setup.exe`,
-  msi: (versao) => `Niko_${versao}_x64_pt-BR.msi`,
+  nsis: (versao) => `Kairo_${versao}_x64-setup.exe`,
+  msi: (versao) => `Kairo_${versao}_x64_pt-BR.msi`,
 };
 
 export function validarArtefatos(raiz, versao, inicio, tipo = "nsis") {
@@ -193,11 +193,11 @@ export function validarArtefatos(raiz, versao, inicio, tipo = "nsis") {
 }
 
 export function montarManifesto(versao, notas, nsis, msi, data = new Date()) {
-  const endereco = (instalador) => `https://github.com/vitorcgo/niko/releases/download/v${validarVersao(versao)}/${instalador}`;
+  const endereco = (instalador) => `https://github.com/henriquehawks/kairo/releases/download/v${validarVersao(versao)}/${instalador}`;
   const entradaNsis = { signature: nsis.assinatura, url: endereco(nsis.instalador) };
   return {
     version: versao,
-    notes: notas || `Niko ${versao}`,
+    notes: notas || `Kairo ${versao}`,
     pub_date: data.toISOString(),
     platforms: {
       "windows-x86_64": entradaNsis,

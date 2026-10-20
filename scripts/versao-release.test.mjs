@@ -9,10 +9,10 @@ function projeto(t, versoes = ["0.1.1", "0.1.1", "0.1.1", "0.1.1"]) {
   const raiz = mkdtempSync(join(tmpdir(), "niko-release-teste-"));
   t.after(() => rmSync(raiz, { recursive: true, force: true }));
   mkdirSync(join(raiz, "src-tauri"));
-  writeFileSync(join(raiz, "package.json"), `{\r\n  "name": "niko",\r\n  "version": "${versoes[0]}",\r\n  "scripts": { "dev": "vite" }\r\n}\r\n`);
+  writeFileSync(join(raiz, "package.json"), `{\r\n  "name": "kairo",\r\n  "version": "${versoes[0]}",\r\n  "scripts": { "dev": "vite" }\r\n}\r\n`);
   writeFileSync(join(raiz, "src-tauri", "tauri.conf.json"), JSON.stringify({ version: versoes[1], plugins: { updater: { pubkey: "chave-publica-preservada" } } }));
-  writeFileSync(join(raiz, "src-tauri", "Cargo.toml"), `[package]\nname = "niko"\nversion = "${versoes[2]}"\n\n[dependencies]\nserde = { version = "1" }\n`);
-  writeFileSync(join(raiz, "src-tauri", "Cargo.lock"), `version = 4\n\n[[package]]\nname = "outra-biblioteca"\nversion = "9.0.0"\n\n[[package]]\nname = "niko"\nversion = "${versoes[3]}"\ndependencies = ["serde"]\n`);
+  writeFileSync(join(raiz, "src-tauri", "Cargo.toml"), `[package]\nname = "kairo"\nversion = "${versoes[2]}"\n\n[dependencies]\nserde = { version = "1" }\n`);
+  writeFileSync(join(raiz, "src-tauri", "Cargo.lock"), `version = 4\n\n[[package]]\nname = "outra-biblioteca"\nversion = "9.0.0"\n\n[[package]]\nname = "kairo"\nversion = "${versoes[3]}"\ndependencies = ["serde"]\n`);
   writeFileSync(join(raiz, "README.md"), "![Versão](https://img.shields.io/badge/versão-0.1.1-0b0d10?style=flat-square)\n");
   return raiz;
 }
@@ -39,7 +39,7 @@ test("recusa versões inválidas, argumentos desconhecidos e versões duplicadas
 test("notas podem vir de arquivo sem conflito, truncamento ou alteração da versão", (t) => {
   const raiz = projeto(t);
   const arquivo = 'notas da versão.md';
-  const texto = `# Niko\n\n${'Detalhes da atualização.\n'.repeat(600)}\nObrigado @gustavowalkersgroup.`;
+  const texto = `# Kairo\n\n${'Detalhes da atualização.\n'.repeat(600)}\nObrigado @gustavowalkersgroup.`;
   writeFileSync(join(raiz, arquivo), `\uFEFF${texto}\n`);
   const opcoes = lerArgumentos(['0.1.2', '--notas-arquivo', arquivo]);
   assert.equal(opcoes.arquivoNotas, arquivo);
@@ -91,7 +91,7 @@ test("bloqueia redução da versão e compara números, não texto", (t) => {
 test("preserva tokens de substituição no conteúdo original", (t) => {
   const raiz = projeto(t);
   const caminho = join(raiz, "package.json");
-  const antes = readFileSync(caminho, "utf8").replace('"name": "niko"', () => '"name": "niko", "description": "$& $1 $`"');
+  const antes = readFileSync(caminho, "utf8").replace('"name": "kairo"', () => '"name": "kairo", "description": "$& $1 $`"');
   writeFileSync(caminho, antes);
   sincronizarVersao(planejarVersao(raiz, "0.1.2"));
   assert.equal(readFileSync(caminho, "utf8"), antes.replace('"0.1.1"', '"0.1.2"'));
@@ -129,7 +129,7 @@ test("recusa aplicar um plano se algum arquivo mudou após a leitura", (t) => {
 test("bloqueia release já publicada, admite ausência e recusa falhas de rede", async () => {
   let url;
   await verificarPublicacao("0.1.2", async (alvo) => { url = alvo; return { status: 404 }; });
-  assert.equal(url, "https://api.github.com/repos/vitorcgo/niko/releases/tags/v0.1.2");
+  assert.equal(url, "https://api.github.com/repos/henriquehawks/kairo/releases/tags/v0.1.2");
   await assert.rejects(verificarPublicacao("0.1.2", async () => ({ status: 200 })), /já existe/);
   await assert.rejects(verificarPublicacao("0.1.2", async () => ({ status: 403 })), /GitHub/);
   await assert.rejects(verificarPublicacao("0.1.2", async () => { throw new Error("sem rede"); }), /GitHub/);
@@ -140,7 +140,7 @@ test("exige instalador e assinatura da versão certa e do build atual", (t) => {
   const pasta = join(raiz, "src-tauri", "target", "release", "bundle", "nsis");
   mkdirSync(pasta, { recursive: true });
   assert.throws(() => validarArtefatos(raiz, "0.1.2", Date.now()), /não foi gerado/);
-  const instalador = join(pasta, "Niko_0.1.2_x64-setup.exe");
+  const instalador = join(pasta, "Kairo_0.1.2_x64-setup.exe");
   const assinatura = `${instalador}.sig`;
   writeFileSync(instalador, "instalador de teste");
   writeFileSync(assinatura, "assinatura de teste");
@@ -158,13 +158,13 @@ test("aceita o MSI e monta o manifesto com uma entrada por instalador", (t) => {
   const pasta = join(raiz, "src-tauri", "target", "release", "bundle", "msi");
   mkdirSync(pasta, { recursive: true });
   assert.throws(() => validarArtefatos(raiz, "0.1.2", Date.now(), "msi"), /não foi gerado/);
-  writeFileSync(join(pasta, "Niko_0.1.2_x64_pt-BR.msi"), "msi de teste");
-  writeFileSync(join(pasta, "Niko_0.1.2_x64_pt-BR.msi.sig"), "assinatura msi");
+  writeFileSync(join(pasta, "Kairo_0.1.2_x64_pt-BR.msi"), "msi de teste");
+  writeFileSync(join(pasta, "Kairo_0.1.2_x64_pt-BR.msi.sig"), "assinatura msi");
   const msi = validarArtefatos(raiz, "0.1.2", Date.now(), "msi");
-  const nsis = { instalador: "Niko_0.1.2_x64-setup.exe", assinatura: "assinatura nsis" };
+  const nsis = { instalador: "Kairo_0.1.2_x64-setup.exe", assinatura: "assinatura nsis" };
   const manifesto = montarManifesto("0.1.2", "", nsis, msi, new Date("2026-10-08T12:00:00Z"));
-  assert.equal(manifesto.notes, "Niko 0.1.2");
+  assert.equal(manifesto.notes, "Kairo 0.1.2");
   assert.deepEqual(manifesto.platforms["windows-x86_64"], manifesto.platforms["windows-x86_64-nsis"]);
-  assert.equal(manifesto.platforms["windows-x86_64-nsis"].url, "https://github.com/vitorcgo/niko/releases/download/v0.1.2/Niko_0.1.2_x64-setup.exe");
-  assert.deepEqual(manifesto.platforms["windows-x86_64-msi"], { signature: "assinatura msi", url: "https://github.com/vitorcgo/niko/releases/download/v0.1.2/Niko_0.1.2_x64_pt-BR.msi" });
+  assert.equal(manifesto.platforms["windows-x86_64-nsis"].url, "https://github.com/henriquehawks/kairo/releases/download/v0.1.2/Kairo_0.1.2_x64-setup.exe");
+  assert.deepEqual(manifesto.platforms["windows-x86_64-msi"], { signature: "assinatura msi", url: "https://github.com/henriquehawks/kairo/releases/download/v0.1.2/Kairo_0.1.2_x64_pt-BR.msi" });
 });

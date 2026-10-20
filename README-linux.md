@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Logo do Niko" width="112" />
+<img src="src-tauri/icons/128x128@2x.png" alt="Logo do Kairo" width="112" />
 
-# Niko no Linux
+# Kairo no Linux
 
 **Seu sistema de vida, agora também no Linux.**
 
-Adaptação do Niko para Linux: a ilha, o dock e a janela do sistema rodando sobre o mesmo código, com as partes exclusivas do Windows trocadas por equivalentes do Linux.
+Adaptação do Kairo para Linux: a ilha, o dock e a janela do sistema rodando sobre o mesmo código, com as partes exclusivas do Windows trocadas por equivalentes do Linux.
 
 ![Linux](https://img.shields.io/badge/Fedora%20%7C%20Ubuntu-GNOME-0b0d10?style=flat-square)
 ![Versão](https://img.shields.io/badge/versão-0.2.3-0b0d10?style=flat-square)
@@ -20,15 +20,15 @@ Este documento descreve a adaptação para Linux, que começou no código da ver
 
 ## Instalar
 
-Baixe o pacote na [página de releases](https://github.com/vitorcgo/niko/releases/latest). O Node já vem dentro do pacote.
+Baixe o pacote na [página de releases](https://github.com/henriquehawks/kairo/releases/latest). O Node já vem dentro do pacote.
 
 ```bash
 sudo apt install ./Niko_*_amd64.deb        # Ubuntu e Debian
-sudo dnf install ./Niko-*.x86_64.rpm       # Fedora
+sudo dnf install ./Kairo-*.x86_64.rpm       # Fedora
 chmod +x Niko_*_amd64.AppImage && ./Niko_*_amd64.AppImage   # outras distribuições
 ```
 
-Depois instale as ferramentas da tabela abaixo que quiser usar. Sem elas o Niko abre, mas o recurso correspondente fica indisponível. No Linux o app avisa quando sai versão nova, mas não se atualiza sozinho: baixe o pacote novo e instale por cima.
+Depois instale as ferramentas da tabela abaixo que quiser usar. Sem elas o Kairo abre, mas o recurso correspondente fica indisponível. No Linux o app avisa quando sai versão nova, mas não se atualiza sozinho: baixe o pacote novo e instale por cima.
 
 ## O que foi feito
 
@@ -54,7 +54,7 @@ O Windows continua funcionando como antes. Tudo o que depende do sistema fica nu
 | **Tempo ocioso** | Monitor de inatividade do GNOME | já vem no sistema | já vem no sistema |
 | **Ganchos das ferramentas de código** | Mesmos ganchos HTTP, com `curl` em vez de `curl.exe` | `curl` | `curl` |
 
-A pasta de dados do app fica em `~/.local/share/com.niko.desktop`. No Linux o Niko força o backend X11 (`GDK_BACKEND=x11`), porque posicionar janelas por coordenada e ler o cursor global não funciona em Wayland puro.
+A pasta de dados do app fica em `~/.local/share/com.kairo.desktop`. No Linux o Kairo força o backend X11 (`GDK_BACKEND=x11`), porque posicionar janelas por coordenada e ler o cursor global não funciona em Wayland puro.
 
 ## O que muda ou não existe
 
@@ -133,7 +133,7 @@ Com o `pnpm dev` aberto, em outro terminal:
 pnpm tauri dev
 ```
 
-O Niko aceita uma só instância. Para reiniciar o app, rode `pkill -x niko` antes do `pnpm tauri dev`.
+O Kairo aceita uma só instância. Para reiniciar o app, rode `pkill -x niko` antes do `pnpm tauri dev`.
 
 ### Gerar o pacote
 
@@ -158,7 +158,7 @@ As opções de pacote do Linux ficam em `src-tauri/tauri.linux.conf.json`, que o
 
 | Variável | Para que serve |
 | -------- | -------------- |
-| `GDK_BACKEND` | O Niko define `x11` sozinho; defina outro valor para sobrescrever |
+| `GDK_BACKEND` | O Kairo define `x11` sozinho; defina outro valor para sobrescrever |
 | `WEBKIT_DISABLE_DMABUF_RENDERER=1` | Contorna janela em branco ou preta em algumas placas de vídeo (por exemplo NVIDIA) |
 | `NO_STRIP=true` | Evita falha do empacotador do AppImage |
 | `XDG_DATA_HOME` | Muda a pasta de dados (padrão `~/.local/share`) |

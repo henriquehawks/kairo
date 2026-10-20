@@ -88,7 +88,7 @@ test("modo desconhecido ou data inválida não inventa confirmação", () => {
 const pastaClaude = join(raizTemporaria, ".claude");
 const settings = join(pastaClaude, "settings.json");
 const lerSettings = () => JSON.parse(readFileSync(settings, "utf8"));
-const pastaDeDados = join(process.platform === "win32" ? process.env.APPDATA : process.env.XDG_DATA_HOME, "com.niko.desktop");
+const pastaDeDados = join(process.platform === "win32" ? process.env.APPDATA : process.env.XDG_DATA_HOME, "com.kairo.desktop");
 const segredo = () => JSON.parse(readFileSync(join(pastaDeDados, "gancho-claude.json"), "utf8")).segredo;
 
 let servidor;
@@ -161,7 +161,7 @@ test("status line: entra junto com os ganchos, guarda a antiga e devolve ela ao 
   claude.instalarGanchos({ confirmacao: "INSTALAR" });
 });
 
-test("remover tira só as entradas do Niko", () => {
+test("remover tira só as entradas do Kairo", () => {
   claude.removerGanchos({ confirmacao: "REMOVER" });
   const dados = lerSettings();
   assert.equal(dados.model, "opus");

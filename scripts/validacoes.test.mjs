@@ -89,7 +89,7 @@ test("feed usa somente acontecimentos válidos e ordena os mais recentes", () =>
   assert.deepEqual(acontecimentosDoEscritorio([]), []);
 });
 
-test("aparência Niko preserva identidade e tempo nunca fica negativo ou NaN", () => {
+test("aparência Kairo preserva identidade e tempo nunca fica negativo ou NaN", () => {
   const original = appearanceFromSeed(hash32("agente"));
   assert.deepEqual(aparenciaDoEscritorio("agente", "original"), original);
   const niko = aparenciaDoEscritorio("agente", "niko", "#112233");
@@ -306,7 +306,7 @@ test("ICS respeita TZID e converte a data ao atravessar meia-noite", () => {
   assert.deepEqual(lerDataIcs("20261008T233000Z", "", "Asia/Tokyo"), { data: "2026-10-09", hora: "08:30" });
 });
 
-test("ICS preserva dia inteiro e horário sem fuso, como a exportação do Niko", () => {
+test("ICS preserva dia inteiro e horário sem fuso, como a exportação do Kairo", () => {
   assert.deepEqual(lerDataIcs("20261008", ";VALUE=DATE", "America/Sao_Paulo"), { data: "2026-10-08" });
   assert.deepEqual(lerDataIcs("20261008T083000", "", "Asia/Tokyo"), { data: "2026-10-08", hora: "08:30" });
 });
@@ -506,7 +506,7 @@ test("botões opcionais do dock mantêm o padrão em configurações antigas e s
   } finally { useConfig.setState(anterior); }
 });
 
-test("dock só renderiza os botões habilitados, mantendo Niko e acesso à busca pelo menu", async () => {
+test("dock só renderiza os botões habilitados, mantendo Kairo e acesso à busca pelo menu", async () => {
   const { Dock } = await vite.ssrLoadModule('/src/janelas/dock/Dock.tsx');
   const { T } = await vite.ssrLoadModule('/src/textos/textos.ts');
   const inicial = useConfig.getInitialState();
@@ -607,11 +607,11 @@ test("no AppImage a status line do Claude usa uma cópia fixa do Node", async ()
   const montagem = juntar(pasta, "montagem-temporaria-node");
   gravar(montagem, "node falso");
   try {
-    assert.equal(nodeDaStatus("/usr/lib/Niko/recursos/node", undefined, pasta), "/usr/lib/Niko/recursos/node");
-    const fixa = nodeDaStatus(montagem, "/home/a/Niko.AppImage", juntar(pasta, "dados"));
+    assert.equal(nodeDaStatus("/usr/lib/Kairo/recursos/node", undefined, pasta), "/usr/lib/Kairo/recursos/node");
+    const fixa = nodeDaStatus(montagem, "/home/a/Kairo.AppImage", juntar(pasta, "dados"));
     assert.equal(fixa, juntar(pasta, "dados", "node-da-status"));
     assert.equal(ler(fixa, "utf8"), "node falso");
-    assert.equal(nodeDaStatus(montagem, "/home/a/Niko.AppImage", juntar(pasta, "dados")), fixa);
+    assert.equal(nodeDaStatus(montagem, "/home/a/Kairo.AppImage", juntar(pasta, "dados")), fixa);
   } finally {
     rmSync(pasta, { recursive: true, force: true });
   }

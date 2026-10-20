@@ -10,7 +10,7 @@ import { useAtualizacao } from "../../estado/atualizacao";
 import { NATIVO } from "../../desktop/desktop";
 import { T } from "../../textos/textos";
 
-const REPOSITORIO = "https://github.com/vitorcgo/niko";
+const REPOSITORIO = "https://github.com/henriquehawks/kairo";
 const VERSOES = `${REPOSITORIO}/releases`;
 
 function GavetaDaVersao({ versao: v, atual, aberta }: { versao: VersaoComNovidades; atual?: boolean; aberta?: boolean }) {
@@ -64,7 +64,7 @@ export default function Atualizacao() {
     <>
       <CabecalhoAba titulo={T.atualizacao.titulo} subtitulo={T.atualizacao.subtitulo} />
       <section className="atualizacao-criador">
-        <img className="atualizacao-foto" src="/criador-vitor.jpg" width={56} height={56} alt={T.atualizacao.fotoCriador} />
+        <img className="atualizacao-foto" src="/criador.jpg" width={56} height={56} alt={T.atualizacao.fotoCriador} />
         <span className="atualizacao-criador-texto">
           <span className="rotulo-secao">{T.atualizacao.criador}</span>
           <b className="atualizacao-criador-nome">{T.atualizacao.nomeCriador} <span>{T.atualizacao.usuarioCriador}</span></b>
@@ -74,7 +74,7 @@ export default function Atualizacao() {
           <a href={REPOSITORIO} target="_blank" rel="noopener noreferrer"><Marca marca="github" tamanho={13} monocromatica />{T.atualizacao.github}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
           <a href="https://nikoapp-eight.vercel.app/" target="_blank" rel="noopener noreferrer"><Globe size={13} />{T.atualizacao.site}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
           <a href={VERSOES} target="_blank" rel="noopener noreferrer"><History size={13} />{T.atualizacao.versoes}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
-          <a href="https://github.com/vitorcgo" target="_blank" rel="noopener noreferrer"><img src="/criador-vitor.jpg" width={16} height={16} alt="" className="atualizacao-link-foto" />{T.atualizacao.githubCriador}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
+          <a href="https://github.com/henriquehawks" target="_blank" rel="noopener noreferrer"><img src="/criador.jpg" width={16} height={16} alt="" className="atualizacao-link-foto" />{T.atualizacao.githubCriador}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
         </nav>
       </section>
       <section className="atualizacao-painel">

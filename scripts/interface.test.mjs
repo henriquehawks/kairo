@@ -109,7 +109,7 @@ test("claro e escuro são revelados para fora sobre a imagem anterior e liberam 
   }
 });
 
-for (const [nome, opcoes] of Object.entries({ "sem suporte": { semApi: true }, "redução do sistema": { reduzirSistema: true }, "redução do Niko": { reduzirApp: true }, "janela oculta": { oculto: true }, "falha ao iniciar": { falharInicio: true } })) {
+for (const [nome, opcoes] of Object.entries({ "sem suporte": { semApi: true }, "redução do sistema": { reduzirSistema: true }, "redução do Kairo": { reduzirApp: true }, "janela oculta": { oculto: true }, "falha ao iniciar": { falharInicio: true } })) {
   test(`troca o tema imediatamente ${nome}, sem sobreposição presa`, (t) => {
     const c = prepararTransicao(t, opcoes);
     let aplicacoes = 0;
@@ -221,8 +221,8 @@ function comFalha(props = {}) {
 test("falha geral apresenta recuperação sem expor detalhes do erro nem recarregar automaticamente", () => {
   const html = renderToStaticMarkup(comFalha().render());
   assert.match(html, /role="alert"/);
-  assert.match(html, /Não foi possível exibir o Niko/);
-  assert.match(html, /Recarregar o Niko/);
+  assert.match(html, /Não foi possível exibir o Kairo/);
+  assert.match(html, /Recarregar o Kairo/);
   assert.match(html, /ainda não salvas podem ser perdidas/);
   assert.doesNotMatch(html, /dados privados|Conteúdo que falhou|Voltar ao início/);
 });

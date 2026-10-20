@@ -1,6 +1,6 @@
 export async function lerUltimaVersao() {
-  const resposta = await fetch("https://api.github.com/repos/vitorcgo/niko/releases/latest", {
-    headers: { Accept: "application/vnd.github+json", "User-Agent": "Niko" },
+  const resposta = await fetch("https://api.github.com/repos/henriquehawks/kairo/releases/latest", {
+    headers: { Accept: "application/vnd.github+json", "User-Agent": "Kairo" },
     signal: AbortSignal.timeout(15000),
   });
   if (resposta.status === 404) return { versao: null, notas: "" };

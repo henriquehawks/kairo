@@ -431,7 +431,7 @@ test("função desligada some das ferramentas, do banco, dos comandos e do promp
   assert.match(executarComando("/tarefa estudar").resposta, /Diário e tarefas está desligado/);
   assert.equal(capturar("nota", "lembrar disso").ok, false);
   const prompt = promptDoAgente("operador");
-  assert.match(prompt, /desligou estas funções do Niko: Finanças, Diário e tarefas/);
+  assert.match(prompt, /desligou estas funções do Kairo: Finanças, Diário e tarefas/);
   assert.ok(!prompt.includes("/gasto"));
   assert.ok(!prompt.includes("Tarefas de hoje"));
 });

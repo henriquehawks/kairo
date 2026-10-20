@@ -1,5 +1,5 @@
 #[cfg(not(any(windows, target_os = "linux")))]
-compile_error!("O Niko roda no Windows e no Linux.");
+compile_error!("O Kairo roda no Windows e no Linux.");
 
 #[cfg(windows)]
 mod windows;

@@ -86,7 +86,7 @@ function fecharTurno(r: RegistroDeSessao, ate: number) {
 
 export function acumular(h: HistoricoDeCodigo, e: EventoDeCodigo): HistoricoDeCodigo {
   const quando = Date.parse(e.recebidoEm);
-  if (!e.sessao || !Number.isFinite(quando) || quando <= h.ultimoEvento || e.evento.startsWith("Niko")) return h;
+  if (!e.sessao || !Number.isFinite(quando) || quando <= h.ultimoEvento || e.evento.startsWith("Kairo")) return h;
   const anterior = h.sessoes[e.sessao];
   const r: RegistroDeSessao = anterior
     ? { ...anterior, dias: anterior.dias ?? {} }

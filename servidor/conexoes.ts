@@ -43,7 +43,7 @@ export function estadoConexoes() {
 export async function pedir<T>(url: string, cabecalhos: Record<string, string>, corpo?: unknown): Promise<T> {
   const r = await fetch(url, {
     method: corpo === undefined ? "GET" : "POST",
-    headers: { accept: "application/json", "user-agent": "Niko", ...(corpo === undefined ? {} : { "content-type": "application/json" }), ...cabecalhos },
+    headers: { accept: "application/json", "user-agent": "Kairo", ...(corpo === undefined ? {} : { "content-type": "application/json" }), ...cabecalhos },
     body: corpo === undefined ? undefined : JSON.stringify(corpo),
     signal: AbortSignal.timeout(15000),
   });

@@ -14,7 +14,7 @@ const TEMPO_DO_GANCHO_RAPIDO_S = 10;
 const TEMPO_DO_GANCHO_FINAL_S = 3;
 const TEMPO_PARA_CONECTAR_S = 1;
 const TEMPO_DO_CURL_RAPIDO_S = 3;
-const INICIO_DO_BLOCO_TOML = "# niko:inicio (gerado pelo Niko, remova pelo Niko)";
+const INICIO_DO_BLOCO_TOML = "# niko:inicio (gerado pelo Kairo, remova pelo Kairo)";
 const FIM_DO_BLOCO_TOML = "# niko:fim";
 
 export const FERRAMENTAS_DE_CODIGO: FerramentaDeCodigo[] = ["claude", "codex", "copilot", "opencode", "antigravity", "kimi", "gemini", "amp"];
@@ -338,7 +338,7 @@ function semBlocoToml(textoAtual: string) {
 
 export function pluginDoOpencode(chave: string) {
   const url = `http://127.0.0.1:${porta()}${PREFIXO_DA_ROTA}opencode`;
-  return `// Gerado pelo Niko: manda os eventos do OpenCode para a ilha. Remova pelo Niko.
+  return `// Gerado pelo Kairo: manda os eventos do OpenCode para a ilha. Remova pelo Kairo.
 const URL_DO_NIKO = ${JSON.stringify(url)};
 const CHAVE = ${JSON.stringify(chave)};
 
@@ -420,7 +420,7 @@ export default {
 
 export function pluginDoAmp(chave: string) {
   const url = `http://127.0.0.1:${porta()}${PREFIXO_DA_ROTA}amp`;
-  return `// Gerado pelo Niko: manda os eventos do Amp para a ilha, só para acompanhar. Remova pelo Niko.
+  return `// Gerado pelo Kairo: manda os eventos do Amp para a ilha, só para acompanhar. Remova pelo Kairo.
 const URL_DO_NIKO = ${JSON.stringify(url)};
 const CHAVE = ${JSON.stringify(chave)};
 

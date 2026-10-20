@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Logo do Niko" width="112" />
+<img src="src-tauri/icons/128x128@2x.png" alt="Logo do Kairo" width="112" />
 
-# Niko
+# Kairo
 
 **Seu sistema de vida para Windows e Linux.**
 
@@ -16,7 +16,7 @@ Rotina, estudos, finanças, metas e os serviços que você acompanha, reunidos e
 <br />
 
 <a href="midia/comercial.mp4">
-  <img src="midia/capa-comercial.png" alt="Assistir ao comercial do Niko" width="760" />
+  <img src="midia/capa-comercial.png" alt="Assistir ao comercial do Kairo" width="760" />
 </a>
 
 <sub>Clique na imagem para assistir ao comercial.</sub>
@@ -25,11 +25,11 @@ Rotina, estudos, finanças, metas e os serviços que você acompanha, reunidos e
 
 ---
 
-Este README descreve o código atual do repositório. Algumas mudanças podem ainda não estar no instalador da última release. Para saber o que foi distribuído, consulte as [releases](https://github.com/vitorcgo/niko/releases).
+Este README descreve o código atual do repositório. Algumas mudanças podem ainda não estar no instalador da última release. Para saber o que foi distribuído, consulte as [releases](https://github.com/henriquehawks/kairo/releases).
 
 ## Sobre
 
-O Niko é um aplicativo desktop que fica junto do sistema, e não dentro de uma aba do navegador. Ele roda no Windows 10 e 11 e no Linux (Ubuntu e Fedora com GNOME). Este README descreve a versão do Windows; o que muda no Linux está no [README-linux](README-linux.md). Ele aparece em três camadas:
+O Kairo é um aplicativo desktop que fica junto do sistema, e não dentro de uma aba do navegador. Ele roda no Windows 10 e 11 e no Linux (Ubuntu e Fedora com GNOME). Este README descreve a versão do Windows; o que muda no Linux está no [README-linux](README-linux.md). Ele aparece em três camadas:
 
 | Camada | Onde fica | Para que serve |
 | ------ | --------- | -------------- |
@@ -49,7 +49,7 @@ Três princípios guiam o projeto:
 
 - **Funciona sem IA.** Toda função principal tem um caminho próprio. A IA é uma camada opcional que melhora o que já funciona.
 - **Você escolhe o provedor.** Cada pessoa conecta o provedor e o modelo que quiser, com a própria chave, ou usa um modelo local.
-- **Armazenamento local.** Os registros do app ficam no seu computador e as credenciais das conexões ficam no Gerenciador de Credenciais do Windows. Não é necessário criar uma conta do Niko. Integrações consultam serviços externos e, ao usar IA, mensagens e contexto necessário podem ser enviados ao provedor escolhido. Local não significa que todos os recursos funcionam sem internet.
+- **Armazenamento local.** Os registros do app ficam no seu computador e as credenciais das conexões ficam no Gerenciador de Credenciais do Windows. Não é necessário criar uma conta do Kairo. Integrações consultam serviços externos e, ao usar IA, mensagens e contexto necessário podem ser enviados ao provedor escolhido. Local não significa que todos os recursos funcionam sem internet.
 
 ## Funcionalidades
 
@@ -98,7 +98,7 @@ O fechamento automático oferece 0,5, 1, 2 e 3 segundos, além dos intervalos ma
 
 ### Dock
 
-Substitui a barra de tarefas do Windows com acesso ao Niko, ao Iniciar, à busca e aos aplicativos abertos. Ao passar o mouse, mostra prévias das janelas, de onde dá para focar ou fechar. Também tem os modos fixo, esconder e inteligente.
+Substitui a barra de tarefas do Windows com acesso ao Kairo, ao Iniciar, à busca e aos aplicativos abertos. Ao passar o mouse, mostra prévias das janelas, de onde dá para focar ou fechar. Também tem os modos fixo, esconder e inteligente.
 
 - **Vários monitores:** pode aparecer em cada monitor ou apenas no escolhido, com organização dos apps conforme a configuração.
 - **Perfis de navegador:** separa janelas do Chrome e do Edge quando o Windows fornece identificação do perfil.
@@ -174,13 +174,13 @@ As demais conexões dependem das permissões, credenciais e limites do respectiv
 
 ### Ferramentas de código na ilha
 
-A aba Código integra Claude Code, Codex, Copilot CLI, OpenCode, Antigravity, Kimi, Gemini CLI e Amp. A configuração é feita pelo Niko, com acompanhamento local dos eventos disponíveis em cada ferramenta.
+A aba Código integra Claude Code, Codex, Copilot CLI, OpenCode, Antigravity, Kimi, Gemini CLI e Amp. A configuração é feita pelo Kairo, com acompanhamento local dos eventos disponíveis em cada ferramenta.
 
 - Sessões identificadas por projeto e ferramenta, passos recentes e alterações de arquivos quando informadas.
 - Pedidos de aprovação nas integrações compatíveis, atualmente Claude Code, Codex e Copilot. A integração com Claude também apresenta perguntas com opções para resposta.
 - Acesso ao terminal e ao projeto da sessão, sem transformar o chat comum em um controlador irrestrito do Windows.
 - Indicadores de uso de Claude e Codex quando a fonte fornece esses dados. Ausência de informação não equivale a consumo zero.
-- Resumo semanal local de sessões, comandos, alterações e pedidos registrados. Esses números representam eventos acompanhados pelo Niko, não uma auditoria completa de toda a atividade do computador.
+- Resumo semanal local de sessões, comandos, alterações e pedidos registrados. Esses números representam eventos acompanhados pelo Kairo, não uma auditoria completa de toda a atividade do computador.
 
 As capacidades variam entre ferramentas e versões. Uma integração que acompanha atividade não necessariamente permite aprovar comandos, responder perguntas ou enviar instruções.
 
@@ -194,7 +194,7 @@ As capacidades variam entre ferramentas e versões. Uma integração que acompan
 | **Java** | Engenheiro de software | Código, repositórios, pull requests e conexões |
 
 <p align="center">
-  <img src="docs/imagens/sistema-escritorio.png" alt="Escritório Niko em 3D com os quatro agentes trabalhando e balões de pensamento" width="900" />
+  <img src="docs/imagens/sistema-escritorio.png" alt="Escritório Kairo em 3D com os quatro agentes trabalhando e balões de pensamento" width="900" />
 </p>
 
 <p align="center">
@@ -239,7 +239,7 @@ O pomodoro, a lista de capacidades e o relatório semanal funcionam sem provedor
 
 Anexos analisáveis têm ações para resumir, explicar, criar perguntas e extrair texto. A extração é local; as análises por IA usam o provedor escolhido. Documentos têm limite de 30 MB por arquivo, outros anexos de 8 MB, e cada mensagem admite até quatro anexos. Textos extraídos podem ser recortados antes da análise. OCR reconhece texto, mas interpretar visualmente uma imagem exige um modelo com visão.
 
-As ferramentas do chat podem consultar registros e conexões autorizadas, inclusive arquivos de Estudos. A disponibilidade depende das funções habilitadas, das permissões e do suporte do modelo. O chat do Niko ainda não tem uma ferramenta própria de pesquisa na internet.
+As ferramentas do chat podem consultar registros e conexões autorizadas, inclusive arquivos de Estudos. A disponibilidade depende das funções habilitadas, das permissões e do suporte do modelo. O chat do Kairo ainda não tem uma ferramenta própria de pesquisa na internet.
 
 Perguntas sobre Cloudflare e Supabase são encaminhadas ao Java. Menções explícitas continuam escolhendo o agente. Confirmações e resultados de ações vêm das ferramentas, sem anunciar um cartão pendente como salvo. As respostas do modelo são verificadas antes de aparecer, mas isso não elimina todos os possíveis erros de uma IA.
 
@@ -248,8 +248,8 @@ Perguntas sobre Cloudflare e Supabase são encaminhadas ao Java. Menções expl�
 - Modelos podem errar. Confirmações de ferramentas ajudam a evitar respostas falsas sobre ações executadas, mas não eliminam alucinações.
 - Integrações e análises por IA podem transmitir dados ao serviço escolhido. Revise o contexto e evite anexar segredos ou informações que não deseja compartilhar.
 - Importações, backups e registros passam por validações de formato e referências. Isso não substitui manter seus próprios backups.
-- Não publique chaves, tokens, arquivos de configuração com segredos ou dados pessoais em issues. Para relatar um problema, informe versão do Niko, versão do Windows, passos para reproduzir e uma captura anonimizada.
-- O Escritório tem duas áreas: time Niko e Escritório de IAs. A área de IAs organiza sessões recebidas em salas por projeto, com personagens pixelados, atividade filtrável, detalhes por sessão, renomeação visual, câmera e análises locais por hora, projeto e ferramenta. Usa as mesmas conexões e pedidos do modo Código da ilha. Tarefas, subagentes, contexto e estimativas de custo aparecem somente quando a ferramenta fornece os dados correspondentes. O botão de terminal traz uma sessão existente, não cria um terminal interativo dentro do escritório.
+- Não publique chaves, tokens, arquivos de configuração com segredos ou dados pessoais em issues. Para relatar um problema, informe versão do Kairo, versão do Windows, passos para reproduzir e uma captura anonimizada.
+- O Escritório tem duas áreas: time Kairo e Escritório de IAs. A área de IAs organiza sessões recebidas em salas por projeto, com personagens pixelados, atividade filtrável, detalhes por sessão, renomeação visual, câmera e análises locais por hora, projeto e ferramenta. Usa as mesmas conexões e pedidos do modo Código da ilha. Tarefas, subagentes, contexto e estimativas de custo aparecem somente quando a ferramenta fornece os dados correspondentes. O botão de terminal traz uma sessão existente, não cria um terminal interativo dentro do escritório.
 
 ## Tecnologias
 
@@ -263,14 +263,14 @@ Perguntas sobre Cloudflare e Supabase são encaminhadas ao Java. Menções expl�
 
 ## Download
 
-Baixe somente pelas [releases oficiais deste repositório](https://github.com/vitorcgo/niko/releases). Este README descreve o código atual; confira as notas da release para saber quais recursos estão no instalador.
+Baixe somente pelas [releases oficiais deste repositório](https://github.com/henriquehawks/kairo/releases). Este README descreve o código atual; confira as notas da release para saber quais recursos estão no instalador.
 
 | Sistema | Arquivo | Atualização |
 | ------- | ------- | ----------- |
-| **Windows 10 e 11** | `Niko_x.y.z_x64-setup.exe` | Automática, pelo próprio app |
-| **Ubuntu e Debian** | `Niko_x.y.z_amd64.deb` | Manual: baixe o pacote novo e instale por cima |
-| **Fedora** | `Niko-x.y.z-1.x86_64.rpm` | Manual |
-| **Outras distribuições** | `Niko_x.y.z_amd64.AppImage` | Manual |
+| **Windows 10 e 11** | `Kairo_x.y.z_x64-setup.exe` | Automática, pelo próprio app |
+| **Ubuntu e Debian** | `Kairo_x.y.z_amd64.deb` | Manual: baixe o pacote novo e instale por cima |
+| **Fedora** | `Kairo-x.y.z-1.x86_64.rpm` | Manual |
+| **Outras distribuições** | `Kairo_x.y.z_amd64.AppImage` | Manual |
 
 O `.msi` do Windows fica nas releases só para quem já instalou por ele.
 
@@ -279,15 +279,15 @@ O `.msi` do Windows fica nas releases só para quem já instalou por ele.
 A versão para Linux foi feita para GNOME e está em teste. O Node já vem dentro do pacote. Alguns recursos do Windows ainda não existem no Linux, como as prévias das janelas no dock e a detecção de tela cheia, e outros dependem de programas do sistema, como `playerctl` para a mídia e `tesseract` para o OCR. A lista completa, com os comandos de instalação, está no [README-linux](README-linux.md).
 
 ```bash
-sudo apt install ./Niko_*_amd64.deb     # Ubuntu e Debian
-sudo dnf install ./Niko-*.x86_64.rpm    # Fedora
+sudo apt install ./Kairo_*_amd64.deb     # Ubuntu e Debian
+sudo dnf install ./Kairo-*.x86_64.rpm    # Fedora
 ```
 
 ### Windows Defender e SmartScreen
 
-Um aviso do SmartScreen de **aplicativo não reconhecido** pode acontecer quando um arquivo ainda não tem reputação suficiente. Esse aviso, sozinho, não significa que o Niko tem um vírus ou um erro de funcionamento, conforme a [documentação da Microsoft](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation).
+Um aviso do SmartScreen de **aplicativo não reconhecido** pode acontecer quando um arquivo ainda não tem reputação suficiente. Esse aviso, sozinho, não significa que o Kairo tem um vírus ou um erro de funcionamento, conforme a [documentação da Microsoft](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation).
 
-Isso é diferente de uma **detecção de ameaça pelo Defender**. Não tratamos toda detecção como falso positivo. Se uma ameaça for identificada, interrompa a instalação, mantenha a proteção ativa e relate a versão, o nome da detecção e a origem do download, sem incluir dados pessoais. Não é necessário nem recomendado desativar o antivírus ou criar exclusões para usar o Niko. Um aviso suspeito pode ser [enviado à Microsoft para análise](https://learn.microsoft.com/en-us/windows/security/operating-system-security/virus-and-threat-protection/microsoft-defender-smartscreen).
+Isso é diferente de uma **detecção de ameaça pelo Defender**. Não tratamos toda detecção como falso positivo. Se uma ameaça for identificada, interrompa a instalação, mantenha a proteção ativa e relate a versão, o nome da detecção e a origem do download, sem incluir dados pessoais. Não é necessário nem recomendado desativar o antivírus ou criar exclusões para usar o Kairo. Um aviso suspeito pode ser [enviado à Microsoft para análise](https://learn.microsoft.com/en-us/windows/security/operating-system-security/virus-and-threat-protection/microsoft-defender-smartscreen).
 
 ## Como rodar
 
@@ -350,11 +350,11 @@ pnpm lancar 0.2.2 --notas-arquivo docs/releases/0.2.2.md
 
 Cole o conteúdo desse arquivo na descrição da release no GitHub. O histórico da versão também aparece na página Atualização do instalador 0.2.2; builds da versão anterior não apresentam essas mudanças como já instaladas.
 
-O comando sincroniza `package.json`, `src-tauri/tauri.conf.json`, a versão do pacote Niko em `src-tauri/Cargo.toml` e `src-tauri/Cargo.lock`, além do selo de versão deste README. Antes de escrever, valida os arquivos, recusa redução de versão e consulta o GitHub para impedir uma release duplicada. Em builds feitos a partir de uma tag no GitHub Actions, a tag precisa ser `v` seguida da mesma versão.
+O comando sincroniza `package.json`, `src-tauri/tauri.conf.json`, a versão do pacote Kairo em `src-tauri/Cargo.toml` e `src-tauri/Cargo.lock`, além do selo de versão deste README. Antes de escrever, valida os arquivos, recusa redução de versão e consulta o GitHub para impedir uma release duplicada. Em builds feitos a partir de uma tag no GitHub Actions, a tag precisa ser `v` seguida da mesma versão.
 
 O instalador e a assinatura precisam existir com o nome esperado e ter sido gerados no build atual. Só depois é criado o `latest.json`. O comando não publica nada no GitHub. Envie o instalador e o manifesto gerados em `src-tauri/target/release/bundle/nsis`.
 
-Use a mesma chave de atualização das versões anteriores. O script usa `TAURI_SIGNING_PRIVATE_KEY` ou a chave em `%USERPROFILE%\.tauri\niko-atualizacao.key`. Se ela tiver senha, configure `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` no terminal. Nunca publique a chave privada.
+Use a mesma chave de atualização das versões anteriores. O script usa `TAURI_SIGNING_PRIVATE_KEY` ou a chave em `%USERPROFILE%\.tauri\kairo-atualizacao.key`. Se ela tiver senha, configure `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` no terminal. Nunca publique a chave privada.
 
 Comandos que não geram instalador:
 

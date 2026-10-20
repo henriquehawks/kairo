@@ -72,7 +72,7 @@ export function validarMensagens(valor: unknown): MensagemIa[] {
     }));
 }
 
-const PASTA = join(plataforma.pastaBaseDeDados(), "com.niko.desktop");
+const PASTA = join(plataforma.pastaBaseDeDados(), "com.kairo.desktop");
 const ARQUIVO = join(PASTA, "provedores.json");
 
 export function pastaDados() {

@@ -33,7 +33,7 @@ const canal = !NATIVO && typeof BroadcastChannel !== "undefined" ? new Broadcast
 
 export function enviarComando(c: Comando) {
   if (NATIVO) {
-    void emitTo("sistema", "niko-comandos", c).catch((erro) => console.error("Falha ao enviar comando para a janela do Niko", erro));
+    void emitTo("sistema", "niko-comandos", c).catch((erro) => console.error("Falha ao enviar comando para a janela do Kairo", erro));
   } else canal?.postMessage(c);
   void mostrarSistema();
 }
@@ -47,7 +47,7 @@ export function ouvirComandos(fn: (c: Comando) => void): () => void {
     }, { target: { kind: "WebviewWindow", label: "sistema" } }).then((f) => {
       if (ativo) desligar = f;
       else f();
-    }).catch((erro) => console.error("Falha ao receber comandos na janela do Niko", erro));
+    }).catch((erro) => console.error("Falha ao receber comandos na janela do Kairo", erro));
     return () => {
       if (!ativo) return;
       ativo = false;

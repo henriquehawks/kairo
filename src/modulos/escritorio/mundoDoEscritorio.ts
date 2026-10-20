@@ -27,7 +27,7 @@ export function criarMundoDoEscritorio(canvas: HTMLCanvasElement, aoSelecionar: 
   let visaoGeral = false;
   const movimento = window.matchMedia("(prefers-reduced-motion: reduce)");
   const rotulos = new Map<string, string>();
-  // A arte usa texto de atividades sociais. No Niko, não renderizar emoji ou travessão.
+  // A arte usa texto de atividades sociais. No Kairo, não renderizar emoji ou travessão.
   const escrever = render.ctx.fillText.bind(render.ctx);
   render.ctx.fillText = (texto, x, y, largura) => {
     let limpo = rotulos.get(texto);

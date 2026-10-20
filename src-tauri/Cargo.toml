@@ -1,12 +1,12 @@
 [package]
-name = "niko"
+name = "kairo"
 version = "0.2.5"
-description = "Niko"
+description = "Kairo"
 authors = ["henrique"]
 edition = "2021"
 
 [lib]
-name = "niko_lib"
+name = "kairo_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
