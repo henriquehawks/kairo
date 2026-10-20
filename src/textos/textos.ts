@@ -3004,6 +3004,7 @@ export const T = {
       internos: "Dentro do Kairo",
       acoes: {
         captura: "Captura rápida",
+        print: "Tirar print com a ferramenta do sistema (tecla Print Screen)",
         lupa: `Lupa do dock: apps, janelas, ${SISTEMA} e contas`,
         sistema: "Abrir ou esconder o sistema",
         pomodoro: "Iniciar ou pausar o pomodoro",

@@ -294,6 +294,7 @@ $CHAVE_TEMA = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personaliz
 $CHAVE_BANDEJA = 'HKCU:\Control Panel\NotifyIconSettings'
 $IGNORAR_NA_BANDEJA = @('explorer.exe', 'kairo.exe')
 $PROCESSOS_DE_FUNDO = '(?i)(container|service|services|host|helper|update|updater|crashpad|tray|agent|daemon|broker|monitor)'
+$ESPERA_DA_JANELA_MS = 2500
 $processos = @{}
 $iconesDeProcesso = @{}
 $bandejaConhecida = @{}
@@ -389,7 +390,23 @@ function AbrirDaBandeja($caminho) {
   $nome = [IO.Path]::GetFileNameWithoutExtension($real)
   $doWindows = $real.StartsWith($env:WINDIR, [StringComparison]::OrdinalIgnoreCase)
   if ($doWindows -or $nome -match $PROCESSOS_DE_FUNDO) { throw 'sem_janela' }
+  # O app está rodando sem janela. A bandeja do Windows mandaria o clique para o
+  # ícone, o que não dá para reproduzir: o registro guarda só o executável, e o
+  # Windows 11 não expõe mais a barra de notificação. Então resta executá-lo de
+  # novo, que é como a maioria dos apps de bandeja volta a aparecer. Quem não
+  # reage assim, como o Lightshot, não abriria nada e o clique ficava sem
+  # resposta nenhuma — por isso conferimos se apareceu janela e avisamos quando
+  # não aparecer.
+  $antes = @((ProcessosPorCaminho)[$chave] | Where-Object { $_ } | ForEach-Object { $_.Id })
   Start-Process -FilePath $real -WorkingDirectory ([IO.Path]::GetDirectoryName($real))
+  $limite = [Diagnostics.Stopwatch]::StartNew()
+  while ($limite.ElapsedMilliseconds -lt $ESPERA_DA_JANELA_MS) {
+    Start-Sleep -Milliseconds 150
+    if ((ProcessosPorCaminho)[$chave] | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero }) { return }
+  }
+  $novos = @((ProcessosPorCaminho)[$chave] | Where-Object { $_ -and $antes -notcontains $_.Id })
+  foreach ($p in $novos) { try { Stop-Process -Id $p.Id -Force -ErrorAction Stop } catch { } }
+  throw 'sem_janela'
 }
 
 function CaminhoDaBandeja($caminho) {

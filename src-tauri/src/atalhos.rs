@@ -8,7 +8,7 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut}
 
 use crate::plataforma::digita_com_altgr;
 
-pub const ACOES: [&str; 10] = ["captura", "lupa", "sistema", "pomodoro", "midia", "privacidade", "naoPerturbe", "pedido", "proximaAba", "terminal"];
+pub const ACOES: [&str; 11] = ["captura", "print", "lupa", "sistema", "pomodoro", "midia", "privacidade", "naoPerturbe", "pedido", "proximaAba", "terminal"];
 
 pub const PADRAO: [(&str, &str); 2] = [("captura", "ctrl+alt+space"), ("lupa", "ctrl+alt+l")];
 

@@ -1,6 +1,6 @@
 import { TECLA_SUPER } from "../desktop/plataforma";
 
-export const ACOES_GLOBAIS =["captura", "lupa", "sistema", "pomodoro", "midia", "privacidade", "naoPerturbe", "pedido", "proximaAba", "terminal"] as const;
+export const ACOES_GLOBAIS =["captura", "print", "lupa", "sistema", "pomodoro", "midia", "privacidade", "naoPerturbe", "pedido", "proximaAba", "terminal"] as const;
 
 export type AcaoGlobal = (typeof ACOES_GLOBAIS)[number];
 
@@ -8,6 +8,7 @@ export type SituacaoDoAtalho = "ok" | "desligado" | "invalido" | "repetido" | "d
 
 export const ATALHOS_PADRAO: Record<AcaoGlobal, string> = {
   captura: "ctrl+alt+Space",
+  print: "",
   lupa: "ctrl+alt+KeyL",
   sistema: "ctrl+alt+KeyN",
   pomodoro: "ctrl+alt+KeyP",

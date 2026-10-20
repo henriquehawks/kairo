@@ -449,6 +449,9 @@ pub fn run() {
                             mostrar(app);
                             let _ = app.emit_to("sistema", "niko://captura", ());
                         }
+                        "print" => {
+                            plataforma::apertar_print();
+                        }
                         "pedido" | "proximaAba" | "terminal" => atalhos::avisar_janela(app, "ilha", &acao),
                         _ => atalhos::avisar_janela(app, "sistema", &acao),
                     }

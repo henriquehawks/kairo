@@ -11,7 +11,7 @@ use tauri::{AppHandle, Manager, WebviewWindow};
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowRect, SetForegroundWindow, SW_SHOWNORMAL};
 
-pub use teclado::digita_com_altgr;
+pub use teclado::{apertar_print, digita_com_altgr};
 pub use windows::Win32::Foundation::RECT;
 
 static ULTIMA_FRENTE: AtomicIsize = AtomicIsize::new(0);

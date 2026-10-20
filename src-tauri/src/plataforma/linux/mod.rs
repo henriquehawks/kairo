@@ -63,6 +63,24 @@ pub fn digita_com_altgr(_atalho: &Shortcut) -> bool {
     false
 }
 
+// Mesma ideia da versão do Windows: apertar Print Screen para a ferramenta de
+// captura do usuário responder. Aqui depende do xdotool (X11) ou do ydotool
+// (Wayland); sem eles não há como enviar a tecla, e a ação apenas não acontece.
+pub fn apertar_print() -> bool {
+    for (programa, argumentos) in [("xdotool", ["key", "Print"]), ("ydotool", ["key", "99:1"])] {
+        let saiu = Command::new(programa)
+            .args(argumentos)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status();
+        if matches!(saiu, Ok(estado) if estado.success()) {
+            return true;
+        }
+    }
+    false
+}
+
 pub fn abrir_no_sistema(endereco: &str) -> Result<(), String> {
     let mut filho = Command::new("xdg-open").arg(endereco).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).spawn().map_err(|_| "falha_ao_abrir".to_string())?;
     std::thread::spawn(move || {
