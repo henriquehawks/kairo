@@ -546,7 +546,10 @@ pub fn run() {
                     plataforma::ignorar_cursor(&j, true);
                 }
             }
-            docks::sincronizar(&handle);
+            // Fora da thread principal: sincronizar espera por operações de janela,
+            // que só ela executa.
+            let alvo_dos_docks = handle.clone();
+            tauri::async_runtime::spawn_blocking(move || docks::sincronizar(&alvo_dos_docks));
             docks::vigiar_monitores(handle.clone());
             vigiar_cursor(handle.clone());
 

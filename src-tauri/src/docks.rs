@@ -16,6 +16,7 @@ static LIGADO: AtomicBool = AtomicBool::new(false);
 static ESCOLHA: Mutex<String> = Mutex::new(String::new());
 static ASSINATURA: Mutex<String> = Mutex::new(String::new());
 static SINCRONIZANDO: Mutex<()> = Mutex::new(());
+static PEDIDO_PENDENTE: AtomicBool = AtomicBool::new(false);
 static MONITOR_DA_ILHA: Mutex<String> = Mutex::new(String::new());
 
 #[derive(Serialize, Clone)]
@@ -145,8 +146,26 @@ fn assinatura(lista: &[(Monitor, MonitorDoNiko)]) -> String {
         .join("|")
 }
 
+// Esta função cria, move e consulta janelas, e cada uma dessas operações só
+// acontece na thread principal: quem chama aqui fica esperando por ela. Por isso
+// ninguém pode ficar parado no lock — se a thread principal esperasse, ela nunca
+// atenderia o trabalho que o dono do lock está esperando, e as duas se trancariam.
+// Quem encontra a sincronização em andamento só deixa o pedido marcado.
 pub fn sincronizar(app: &AppHandle) {
-    let Ok(_vez) = SINCRONIZANDO.lock() else { return };
+    let Ok(_vez) = SINCRONIZANDO.try_lock() else {
+        PEDIDO_PENDENTE.store(true, Ordering::SeqCst);
+        return;
+    };
+    loop {
+        PEDIDO_PENDENTE.store(false, Ordering::SeqCst);
+        sincronizar_agora(app);
+        if !PEDIDO_PENDENTE.swap(false, Ordering::SeqCst) {
+            break;
+        }
+    }
+}
+
+fn sincronizar_agora(app: &AppHandle) {
     let ligado = LIGADO.load(Ordering::SeqCst);
     let escolha = ESCOLHA.lock().map(|e| e.clone()).unwrap_or_default();
     let monitores = monitores_ordenados(app);
