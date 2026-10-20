@@ -621,7 +621,7 @@ export const T = {
       abrirDaBandeja: (n: string) => `Abrir ${n}`,
       bandejaVazia: "Nenhum app em segundo plano.",
       lendoBandeja: "Lendo a bandeja",
-      bandejaIndisponivel: "Não foi possível abrir este app.",
+      bandejaIndisponivel: (motivo: string) => (motivo ? `Não foi possível abrir este app (${motivo}).` : "Não foi possível abrir este app."),
       bandejaSemJanela: (nome: string) => `${nome} roda em segundo plano e não tem uma janela para abrir.`,
       bandejaDoWindows: "Esse app faz parte do Windows e não pode ser encerrado por aqui.",
       bandejaAbrir: "Abrir",

@@ -292,7 +292,7 @@ Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @'
 '@
 $CHAVE_TEMA = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
 $CHAVE_BANDEJA = 'HKCU:\Control Panel\NotifyIconSettings'
-$IGNORAR_NA_BANDEJA = @('explorer.exe', 'niko.exe')
+$IGNORAR_NA_BANDEJA = @('explorer.exe', 'kairo.exe')
 $PROCESSOS_DE_FUNDO = '(?i)(container|service|services|host|helper|update|updater|crashpad|tray|agent|daemon|broker|monitor)'
 $processos = @{}
 $iconesDeProcesso = @{}

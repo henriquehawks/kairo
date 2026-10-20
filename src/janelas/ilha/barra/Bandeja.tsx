@@ -19,7 +19,7 @@ export function Bandeja({ topo, direita, aoFechar }: { topo: number; direita: nu
   const [menu, setMenu] = useState<Menu>(null);
   usarBandeja(true, INTERVALO_DA_BANDEJA_MS);
 
-  const falhar = (item: ItemDaBandeja) => (e: Error) => useIlha.getState().avisarFalha(e.message === "sem_janela" ? B.bandejaSemJanela(item.nome) : e.message === "app_do_windows" ? B.bandejaDoWindows : B.bandejaIndisponivel);
+  const falhar = (item: ItemDaBandeja) => (e: Error) => useIlha.getState().avisarFalha(e.message === "sem_janela" ? B.bandejaSemJanela(item.nome) : e.message === "app_do_windows" ? B.bandejaDoWindows : B.bandejaIndisponivel(e.message));
 
   const abrir = (item: ItemDaBandeja) => {
     void tocarSom("blip");
