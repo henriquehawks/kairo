@@ -152,6 +152,8 @@ pub fn retangulo_da_sobreposta(reserva: RECT, altura: i32) -> RECT {
 
 pub fn reservar_espaco_do_dock(_dock: &WebviewWindow, _reservar: bool) {}
 
+pub fn reservar_espaco_do_dock_agora(_dock: &WebviewWindow, _reservar: bool) {}
+
 #[tauri::command]
 pub fn reservar_dock(_window: WebviewWindow, _reservar: bool, _altura: Option<f64>) {}
 

@@ -211,9 +211,34 @@ fn dados_do_dock(dock: &WebviewWindow) -> Option<(APPBARDATA, tauri::Monitor)> {
     Some((dados, monitor))
 }
 
+// As mensagens de appbar e o ShowWindow da barra conversam com o Explorer e só voltam
+// quando ele responde. Enquanto isso, o Explorer avisa as janelas do Kairo pela thread
+// principal: se ela estiver parada dentro de uma dessas chamadas, as duas se esperam e o
+// app congela de vez. Por isso o trabalho de reserva roda numa thread de trabalho, e só o
+// subclasse — que exige a thread dona da janela — volta para a principal.
 pub fn reservar_espaco_do_dock(dock: &WebviewWindow, reservar: bool) {
     let alvo = dock.clone();
-    let _ = dock.run_on_main_thread(move || atualizar_reserva(&alvo, reservar));
+    tauri::async_runtime::spawn_blocking(move || atualizar_reserva(&alvo, reservar));
+}
+
+// No encerramento a reserva precisa sair antes de a janela morrer, então aqui é na hora.
+pub fn reservar_espaco_do_dock_agora(dock: &WebviewWindow, reservar: bool) {
+    atualizar_reserva(dock, reservar);
+}
+
+fn definir_subclasse(dock: &WebviewWindow, instalar: bool) {
+    let alvo = dock.clone();
+    let _ = dock.run_on_main_thread(move || {
+        let Ok(janela) = alvo.hwnd() else { return };
+        let janela = HWND(janela.0);
+        unsafe {
+            if instalar {
+                let _ = SetWindowSubclass(janela, Some(observar_reserva), SUBCLASSE_DA_RESERVA, 0);
+            } else {
+                let _ = RemoveWindowSubclass(janela, Some(observar_reserva), SUBCLASSE_DA_RESERVA);
+            }
+        }
+    });
 }
 
 struct AtualizacaoDaReserva;
@@ -233,8 +258,8 @@ fn atualizar_reserva(dock: &WebviewWindow, reservar: bool) {
             let mut dados = APPBARDATA { cbSize: std::mem::size_of::<APPBARDATA>() as u32, hWnd: janela, ..Default::default() };
             unsafe {
                 SHAppBarMessage(ABM_REMOVE, &mut dados);
-                let _ = RemoveWindowSubclass(janela, Some(observar_reserva), SUBCLASSE_DA_RESERVA);
             }
+            definir_subclasse(dock, false);
             if let Ok(Some(monitor)) = dock.current_monitor() {
                 crate::docks::posicionar(dock, &monitor);
             }
@@ -244,12 +269,10 @@ fn atualizar_reserva(dock: &WebviewWindow, reservar: bool) {
     let Some((mut dados, monitor)) = dados_do_dock(dock) else { return };
     let anterior = reserva_da_janela(janela);
     if anterior.is_none() {
-        unsafe {
-            if !SetWindowSubclass(janela, Some(observar_reserva), SUBCLASSE_DA_RESERVA, 0).as_bool() { return; }
-            if SHAppBarMessage(ABM_NEW, &mut dados) == 0 {
-                let _ = RemoveWindowSubclass(janela, Some(observar_reserva), SUBCLASSE_DA_RESERVA);
-                return;
-            }
+        definir_subclasse(dock, true);
+        if unsafe { SHAppBarMessage(ABM_NEW, &mut dados) } == 0 {
+            definir_subclasse(dock, false);
+            return;
         }
         if let Ok(mut guarda) = RESERVADOS.lock() {
             guarda.get_or_insert_with(HashMap::new).insert(chave, ReservaDock { app: dock.app_handle().clone(), rotulo: dock.label().to_string(), retangulo: None });
@@ -318,10 +341,13 @@ pub fn reservar_dock(window: WebviewWindow, reservar: bool, altura: Option<f64>)
 }
 
 #[tauri::command]
-pub fn barra_windows(app: AppHandle, ocultar_barra: bool) {
-    if ocultar_barra {
-        ocultar(&app);
-    } else {
-        restaurar(&app);
-    }
+pub async fn barra_windows(app: AppHandle, ocultar_barra: bool) {
+    let _ = tauri::async_runtime::spawn_blocking(move || {
+        if ocultar_barra {
+            ocultar(&app);
+        } else {
+            restaurar(&app);
+        }
+    })
+    .await;
 }

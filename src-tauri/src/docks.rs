@@ -157,7 +157,7 @@ pub fn sincronizar(app: &AppHandle) {
         if rotulo == ROTULO_PRINCIPAL || !eh_dock(&rotulo) || desejados.contains(&rotulo) {
             continue;
         }
-        barra::reservar_espaco_do_dock(&janela, false);
+        barra::reservar_espaco_do_dock_agora(&janela, false);
         if let Ok(mut areas) = app.state::<Estado>().areas.lock() {
             areas.remove(&rotulo);
         }

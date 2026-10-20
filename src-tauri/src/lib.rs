@@ -367,7 +367,7 @@ async fn preparar_atualizacao(app: AppHandle) -> Result<(), String> {
     ENCERRANDO.store(true, Ordering::Relaxed);
     for (rotulo, janela) in app.webview_windows() {
         if docks::eh_dock(&rotulo) {
-            barra::reservar_espaco_do_dock(&janela, false);
+            barra::reservar_espaco_do_dock_agora(&janela, false);
         }
     }
     let _ = tauri::async_runtime::spawn_blocking(move || {
@@ -581,7 +581,7 @@ pub fn run() {
             ENCERRANDO.store(true, Ordering::Relaxed);
             for (rotulo, janela) in handle.webview_windows() {
                 if docks::eh_dock(&rotulo) {
-                    barra::reservar_espaco_do_dock(&janela, false);
+                    barra::reservar_espaco_do_dock_agora(&janela, false);
                 }
             }
             barra::restaurar(handle);
