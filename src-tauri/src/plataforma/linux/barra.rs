@@ -155,7 +155,9 @@ pub fn reservar_espaco_do_dock(_dock: &WebviewWindow, _reservar: bool) {}
 pub fn reservar_espaco_do_dock_agora(_dock: &WebviewWindow, _reservar: bool) {}
 
 #[tauri::command]
-pub fn reservar_dock(_window: WebviewWindow, _reservar: bool, _altura: Option<f64>) {}
+pub fn reservar_dock(window: WebviewWindow, reservar: bool, _altura: Option<f64>) {
+    reservar_espaco_do_dock(&window, reservar);
+}
 
 #[tauri::command]
 pub async fn barra_windows(app: AppHandle, ocultar_barra: bool) {
