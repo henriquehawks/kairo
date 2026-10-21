@@ -175,6 +175,14 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.2.7",
+        data: "2026-10-28",
+        mudancas: [
+          ["novo", "testelegal"],
+          ["correcao", "teste mt legal"],
+        ],
+      },
+      {
         versao: "0.2.6",
         data: "2026-10-20",
         mudancas: [
