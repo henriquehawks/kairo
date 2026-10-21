@@ -332,41 +332,73 @@ pnpm build       # build da interface em dist/
 pnpm chat:testar # testes do chat com provedor falso, sem rede ou banco real
 pnpm midia:testar # testes de mídia pausada e consultas fora de ordem
 pnpm app         # gera o instalador do Windows
+pnpm versao      # sincroniza o número da versão nos arquivos, sem buildar
 ```
 
 ### Publicar uma nova versão
 
-Informe a versão explicitamente, sem editar os arquivos à mão:
+Empurrar a tag publica a release sozinho. Commitar não publica nada: o workflow [Publicar versão](.github/workflows/publicar.yml) só roda com uma tag `v*` ou pelo botão Run workflow no GitHub. Tomando a 0.2.7 como exemplo:
+
+**1. Escreva as notas da versão** em `docs/releases/0.2.7.md`, em português e voltadas a quem usa o app, com as seções Novidades, Correções e Antes de instalar. O arquivo é obrigatório: o workflow para antes de buildar se ele faltar, porque é o texto da descrição da release.
+
+**2. Repita as mudanças em `src/textos/textos.ts`**, no começo do array `historico`, com `versao`, `data` e a lista de `mudancas` (`novo`, `melhoria` ou `correcao`). É o que aparece na página Novidades do app.
+
+**3. Confira antes de soltar:**
 
 ```powershell
-pnpm lancar 0.2.2 "Descrição das novidades"
+pnpm verificar
+pnpm test
 ```
 
-As notas completas da versão 0.2.2 estão em [docs/releases/0.2.2.md](docs/releases/0.2.2.md), incluindo os agradecimentos. Para incluir esse mesmo texto no manifesto de atualização, sem colar uma descrição longa no terminal:
+**4. Suba o número da versão:**
 
 ```powershell
-pnpm lancar 0.2.2 --notas-arquivo docs/releases/0.2.2.md
+pnpm versao 0.2.7
 ```
 
-Cole o conteúdo desse arquivo na descrição da release no GitHub. O histórico da versão também aparece na página Atualização do instalador 0.2.2; builds da versão anterior não apresentam essas mudanças como já instaladas.
+Ele grava a versão em `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` e no selo deste README — os cinco de uma vez ou nenhum. Recusa versão menor que a atual, avisa se faltarem as notas e não builda nada.
 
-O comando sincroniza `package.json`, `src-tauri/tauri.conf.json`, a versão do pacote Kairo em `src-tauri/Cargo.toml` e `src-tauri/Cargo.lock`, além do selo de versão deste README. Antes de escrever, valida os arquivos, recusa redução de versão e consulta o GitHub para impedir uma release duplicada. Em builds feitos a partir de uma tag no GitHub Actions, a tag precisa ser `v` seguida da mesma versão.
+**5. Commite e publique:**
 
-O instalador e a assinatura precisam existir com o nome esperado e ter sido gerados no build atual. Só depois é criado o `latest.json`. O comando não publica nada no GitHub. Envie o instalador e o manifesto gerados em `src-tauri/target/release/bundle/nsis`.
+```powershell
+git commit -am "chore: versão 0.2.7"
+git push origin main
+git tag v0.2.7 ; git push origin v0.2.7
+```
 
-Use a mesma chave de atualização das versões anteriores. O script usa `TAURI_SIGNING_PRIVATE_KEY` ou a chave em `%USERPROFILE%\.tauri\kairo-atualizacao.key`. Se ela tiver senha, configure `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` no terminal. Nunca publique a chave privada.
+A tag precisa ser `v` seguido da mesma versão dos arquivos, senão o workflow para.
+
+**6. Acompanhe (~25 min).** O job do Windows roda tipos, testes e o build assinado, e cria a release com o `.exe`, o `.msi` e o `latest.json`. Em seguida, o job do Linux anexa o `.deb`, o `.rpm` e o AppImage na mesma release. Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
+
+Para repetir a mesma versão depois de um erro, apague a release e a tag antes — há uma trava contra release duplicada:
+
+```powershell
+gh release delete v0.2.7 --repo henriquehawks/kairo --yes
+git push origin :v0.2.7
+git tag -d v0.2.7
+```
+
+#### Buildar e assinar no seu computador
+
+`pnpm lancar` faz a mesma sincronização e segue para o build assinado, sem publicar nada:
+
+```powershell
+pnpm lancar 0.2.7 --notas-arquivo docs/releases/0.2.7.md
+```
+
+O instalador e a assinatura precisam existir com o nome esperado e ter sido gerados no build atual; só depois é escrito o `latest.json`, em `src-tauri/target/release/bundle/nsis`. Use sempre a mesma chave de atualização das versões anteriores: o script usa `TAURI_SIGNING_PRIVATE_KEY` ou a chave em `%USERPROFILE%\.tauri\kairo-atualizacao.key`, e no workflow ela vem do secret do repositório. Se ela tiver senha, configure `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Nunca publique a chave privada.
 
 Comandos que não geram instalador:
 
 ```powershell
+pnpm versao
+pnpm versao 0.2.7 --verificar
 pnpm lancar:verificar
-pnpm lancar 0.2.2 --verificar
+pnpm lancar 0.2.7 --verificar
 pnpm lancar:testar
 ```
 
-O primeiro confere se as quatro versões concordam. O segundo mostra uma prévia da sincronização, sem alterar arquivos nem consultar o GitHub. O terceiro executa os testes das proteções de release.
-
-Os números acima são exemplos de comandos, não um anúncio de release. Para reconstruir deliberadamente uma versão já publicada, use a opção `--recompilar` com a versão correspondente. Essa opção dispensa a consulta de duplicidade no GitHub, mas mantém as validações dos arquivos e do build. Não substitua uma release publicada usando esses arquivos.
+Os dois primeiros mostram a versão atual e a prévia da sincronização. O terceiro e o quarto fazem o mesmo pelo `pnpm lancar`. O último executa os testes das proteções de release. Para reconstruir de propósito uma versão já publicada, use `--recompilar`: ela dispensa a consulta de duplicidade, mas mantém as validações dos arquivos e do build. Não substitua uma release publicada com esses arquivos.
 
 ## Estrutura
 
