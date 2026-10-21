@@ -179,6 +179,14 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.1",
+        data: "2026-10-21",
+        mudancas: [
+          ["correcao", "O cursor voltava para o campo anterior enquanto você digitava. Em qualquer formulário que abre numa janelinha, cada tecla devolvia o cursor ao primeiro campo — em Finanças › Recorrentes, o valor da conta ia parar na descrição. Corrigido em todos os formulários."],
+          ["correcao", "O erro \"não foi possível iniciar o serviço local\" na primeira abertura depois de instalar ou atualizar. O Kairo agora espera o serviço subir e, se demorar, avisa que está iniciando, em vez de abrir com erro."],
+        ],
+      },
+      {
         versao: "0.3.0",
         data: "2026-10-21",
         mudancas: [
