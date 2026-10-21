@@ -34,6 +34,8 @@ scripts/*
 !scripts/ilha.test.mjs
 !scripts/testar.mjs
 !scripts/sincronizar-versao.mjs
+!scripts/notas-da-versao.mjs
+!scripts/publicar-versao.mjs
 testes/
 
 # Vídeo e material de divulgação

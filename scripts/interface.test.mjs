@@ -27,6 +27,24 @@ test("novidades da 0.2.2 incluem o time, segurança e agradecimentos, sem anteci
   assert.match(descricao, /https:\/\/github.com\/vitorcgo\/Niko\/pull\/8/);
 });
 
+test("a versão atual tem notas em docs/releases e abre a página de novidades", async () => {
+  const { T } = await vite.ssrLoadModule("/src/textos/textos.ts");
+  const versao = JSON.parse(readFileSync("package.json", "utf8")).version;
+  const caminho = `docs/releases/${versao}.md`;
+  assert.ok(existsSync(caminho), `faltam as notas da versão em ${caminho}; o workflow Publicar versão para sem elas`);
+  const notas = readFileSync(caminho, "utf8").trim();
+  assert.ok(notas.length > 200, `${caminho} está curto demais para virar a descrição da release`);
+  assert.ok(notas.startsWith(`# Kairo ${versao}`), `${caminho} precisa começar com \"# Kairo ${versao}\"`);
+  const atual = T.atualizacao.historico[0];
+  assert.equal(atual.versao, versao, "o histórico de novidades precisa começar pela versão de package.json");
+  assert.match(atual.data, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(atual.mudancas.length > 0, "a versão atual não lista nenhuma mudança");
+  for (const [tipo, texto] of atual.mudancas) {
+    assert.ok(["novo", "melhoria", "correcao"].includes(tipo), `tipo de mudança desconhecido: ${tipo}`);
+    assert.ok(texto.trim().length > 0, "mudança sem texto");
+  }
+});
+
 const origemDoTema = { getBoundingClientRect: () => ({ left: 180, top: 670, width: 40, height: 40 }) };
 
 function prepararTransicao(t, opcoes = {}) {
