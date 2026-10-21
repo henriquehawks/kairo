@@ -43,7 +43,6 @@ niko-video/
 out/
 
 # Ferramentas e configurações locais de assistentes
-CLAUDE.md
 AGENTS.md
 GEMINI.md
 .claude/
