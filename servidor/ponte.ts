@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { listarProvedores, salvarProvedor, removerProvedor, testarProvedor, conversar, validarMensagens, validarFerramentas } from "./ia.ts";
 import { lerConsumo, usoOficial } from "./consumo.ts";
 import { lerUltimaVersao } from "./atualizacoes.ts";
-import { lerTudo, gravar, backupManual, zerarBanco, reservarConfirmacao } from "./banco.ts";
+import { lerTudo, lerDatas, gravar, backupManual, zerarBanco, reservarConfirmacao } from "./banco.ts";
 import { pedirMidia } from "./midia.ts";
 import { pedirJanelas } from "./janelas.ts";
 import { estadoConexoes, lerConexao, salvarChaveConexao, removerChaveConexao, servicoValido, chaveDe, SERVICOS as SERVICOS_CONEXAO } from "./conexoes.ts";
@@ -163,7 +163,8 @@ export const rotas: Connect.NextHandleFunction = async (req, res, proximo) => {
       if (conexao[2] && req.method === "DELETE") return responder(res, 200, await removerChaveConexao(servico));
     }
     if (caminho === "/dados" && req.method === "GET") {
-      return responder(res, 200, { dados: lerTudo(String(req.headers["x-niko-banco"] ?? "")) });
+      const banco = String(req.headers["x-niko-banco"] ?? "");
+      return responder(res, 200, { dados: lerTudo(banco), datas: lerDatas(banco) });
     }
     if (caminho === "/dados" && req.method === "POST") {
       const corpo = await lerCorpo(req);

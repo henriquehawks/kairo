@@ -53,6 +53,15 @@ export function lerTudo(nome = ""): Record<string, string> {
   return Object.fromEntries(linhas.map((l) => [l.chave, l.valor]));
 }
 
+/**
+ * Quando cada chave mudou pela última vez. A tabela já guarda isso desde sempre; a
+ * sincronização entre máquinas precisa desse carimbo para decidir qual lado é o mais novo.
+ */
+export function lerDatas(nome = ""): Record<string, number> {
+  const linhas = abrir(nome).prepare("SELECT chave, atualizado FROM dados").all() as { chave: string; atualizado: number }[];
+  return Object.fromEntries(linhas.map((l) => [l.chave, l.atualizado]));
+}
+
 export function gravar(itens: Record<string, string | null>, nome = "") {
   const db = abrir(nome);
   const inserir = db.prepare("INSERT INTO dados (chave, valor, atualizado) VALUES (?, ?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor, atualizado = excluded.atualizado");

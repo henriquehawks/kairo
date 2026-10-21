@@ -3,6 +3,7 @@ import { dataValida, horaValida } from "./datas";
 import type { Conta, Categoria, Evento, Pagina, Transacao } from "../tipos";
 import { CONFIG_PADRAO } from "../estado/configuracoes";
 import { validarFormatoConfiguracoes } from "./configuracoesValidas";
+import { NOME_DA_MAQUINA } from "../estado/divisaoDaMaquina";
 import { configuracaoEscritorioValida } from "../modulos/escritorio/configuracaoDoEscritorio";
 import { corteDasAnalisesValido, registrosValidos } from "../modulos/escritorio/dadosDoEscritorio";
 
@@ -86,7 +87,7 @@ export function validarEstadoSalvo(nome: string, bruto: unknown): asserts bruto 
   exigir(objeto(bruto) && objeto(bruto.state));
   exigir(bruto.version === undefined || (Number.isInteger(bruto.version) && Number(bruto.version) >= 0 && Number(bruto.version) <= (nome === "configuracoes" ? 10 : nome === "agentes" ? 1 : 0)));
   const estado = bruto.state;
-  if (nome === "configuracoes") {
+  if (nome === "configuracoes" || nome === NOME_DA_MAQUINA) {
     validarFormatoConfiguracoes(estado, CONFIG_PADRAO);
     for (const campo of ["ilha", "dock", "assistive", "pomodoro", "agua", "sons", "agentes", "consumo", "ia"]) if (campo in estado) exigir(objeto(estado[campo]));
     if (objeto(estado.agentes)) for (const campo of ["nomes", "cargos"]) if (campo in estado.agentes) {
@@ -134,7 +135,7 @@ function areaDoBackup(nome: string, valor: unknown): string {
   exigir(typeof valor === "string");
   const salvo: unknown = JSON.parse(valor);
   validarEstadoSalvo(nome, salvo);
-  const permitidos = nome === "configuracoes" ? CONFIG_PADRAO : esquemas[nome];
+  const permitidos = nome === "configuracoes" || nome === NOME_DA_MAQUINA ? CONFIG_PADRAO : esquemas[nome];
   const ignorarAte = corteDasAnalisesValido(salvo.state.ignorarAte);
   const estado = nome === "escritorio-ias" ? { config: configuracaoEscritorioValida(salvo.state.config), registros: registrosValidos(salvo.state.registros).filter((r) => r.em > ignorarAte), ignorarAte } : Object.fromEntries(Object.entries(salvo.state).filter(([k]) => Object.hasOwn(permitidos, k)));
   return JSON.stringify({ state: estado, ...(salvo.version !== undefined ? { version: salvo.version } : {}) });
@@ -147,7 +148,7 @@ export function lerBackup(bruto: unknown): { dados: Record<string, string>; igno
   for (const [chave, valor] of Object.entries(bruto.dados)) {
     if (!/^niko:[a-z0-9_-]{1,60}$/.test(chave)) continue;
     const nome = chave.slice(5);
-    if (nome !== "configuracoes" && !Object.hasOwn(esquemas, nome)) continue;
+    if (nome !== "configuracoes" && nome !== NOME_DA_MAQUINA && !Object.hasOwn(esquemas, nome)) continue;
     try {
       dados[chave] = areaDoBackup(nome, valor);
     } catch {

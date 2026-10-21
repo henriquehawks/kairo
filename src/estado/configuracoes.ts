@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { armazenamento, chave } from "../ponte/armazenamento";
+import { chave } from "../ponte/armazenamento";
 import type { AgenteId, CartaoConfirmacao, Rota } from "../tipos";
 import type { CategoriaSom } from "../ponte/sons";
 import { FUNDO_DESTAQUE, hexValido, misturar } from "../utilitarios/cores";
@@ -10,6 +10,7 @@ import { ASSISTIVE_PADRAO, validarAssistive, type ConfigAssistive } from "../jan
 import { POSICAO_PADRAO, type PosicaoIlha } from "../janelas/ilha/posicao";
 import { configuracoesValidas } from "../utilitarios/configuracoesValidas";
 import { objeto } from "../utilitarios/validacoes";
+import { armazenamentoDaConfiguracao } from "./armazenamentoDaConfiguracao";
 import { aparenciaPadrao, type AparenciaAgente } from "../personagens/personalizacao";
 import { SEM_ACESSORIOS, type AcessoriosAgente } from "../personagens/acessorios";
 
@@ -268,7 +269,7 @@ export const useConfig = create<Configuracoes & AcoesConfig>()(
     }),
     {
       name: chave("configuracoes"),
-      storage: armazenamento,
+      storage: armazenamentoDaConfiguracao(),
       version: 10,
       migrate: (salvo, versao) => {
         const s = (objeto(salvo) ? { ...salvo } : {}) as Partial<Configuracoes>;

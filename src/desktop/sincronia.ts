@@ -10,9 +10,12 @@ import { useEstudos } from "../estado/estudos";
 import { useOrganizacao } from "../estado/organizacao";
 import { useEscritorioIas } from "../estado/escritorioIas";
 import { aoMudarDeFora, chave } from "../ponte/armazenamento";
+import { NOME_DA_MAQUINA } from "../estado/divisaoDaMaquina";
 
 const LOJAS: Record<string, { persist: { rehydrate: () => Promise<void> | void } }> = {
   [chave("configuracoes")]: useConfig,
+  // A configuração mora em duas chaves; mudar a da máquina também precisa reidratar.
+  [chave(NOME_DA_MAQUINA)]: useConfig,
   [chave("agentes")]: useAgentes,
   [chave("conquistas")]: useConquistas,
   [chave("comunicacao")]: useComunicacao,
