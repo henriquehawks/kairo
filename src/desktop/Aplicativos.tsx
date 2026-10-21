@@ -16,6 +16,7 @@ import { useServicos } from "../servicos/servicos";
 import { usarPreferenciasDaJanela } from "../servicos/usarPreferenciasDaJanela";
 import { definirMonitorDaIlha, janelaAtual, ouvirComandos, ouvirEvento, sincronizarInicioComWindows } from "./desktop";
 import { usarSincronia } from "./sincronia";
+import { usarSincroniaDaConta } from "./sincroniaDaConta";
 import { usarAtalhosDaIlha, usarAtalhosGlobais } from "./usarAtalhosGlobais";
 
 export function AppSistema() {
@@ -23,6 +24,7 @@ export function AppSistema() {
   usarPreferenciasDaJanela();
   usarAtalhos();
   usarAtalhosGlobais();
+  usarSincroniaDaConta();
   usarSincronia();
   const janelas = useInterface((s) => s.janelasConexao);
   const primeira = useConfig((s) => s.primeiraExecucaoFeita);

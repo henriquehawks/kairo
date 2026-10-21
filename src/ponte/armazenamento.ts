@@ -86,7 +86,8 @@ function receberDeFora(m: unknown) {
   ouvintesDeFora.forEach((f) => f(chaveRecebida));
 }
 
-async function recarregarDaPonte() {
+/** Relê tudo da ponte e entrega cada chave pelo caminho de "mudou de fora". */
+export async function recarregarDaPonte() {
   if (modo !== "banco") return;
   try {
     const r = await fetch("/ponte/dados", { headers: CABECALHOS });

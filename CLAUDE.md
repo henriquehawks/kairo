@@ -106,6 +106,35 @@ As ferramentas que o modelo pode chamar estão em `src/utilitarios/ferramentasIa
 
 `servidor/claude.ts` e `servidor/agentesDeCodigo.ts` instalam ganchos nas configurações de Claude Code, Codex, Copilot CLI, OpenCode, Antigravity, Kimi, Gemini CLI e Amp (`FERRAMENTAS_DE_CODIGO`). Os ganchos são comandos `curl` que postam em `/ponte/agentes/evento/<ferramenta>` com um segredo próprio; o Kairo acompanha sessões, mostra alterações e responde pedidos de aprovação. A instalação edita arquivos do usuário (`~/.claude/settings.json` e equivalentes) marcando os blocos como gerados pelo Kairo (marcador literal `# niko:inicio`, mantido), para poder removê-los depois — mexa aí com cuidado e sempre pelos caminhos de `instalarAgente` / `removerAgente`.
 
+### Conta e sincronização (em testes)
+
+Há uma conta opcional que leva os dados da pessoa de um computador para outro,
+cifrados de ponta a ponta. **Está desligada**: `CONTA_LIBERADA` em
+`servidor/configuracaoDaConta.ts` é `false` e as rotas `/ponte/conta/*` respondem
+`{ disponivel: false, emTestes: true }`, como o Google Workspace.
+
+O princípio do armazenamento local continua valendo: **a conta é opcional e o app
+funciona inteiro sem ela.** Quem nunca criar conta não é afetado em nada.
+
+Vive em `servidor/` porque a CSP só deixa a interface falar com a ponte. As peças
+puras — `cofreDeDados.ts` (criptografia) e `decisaoDeSincronizacao.ts` (o que sobe,
+o que desce, o que é conflito) — não tocam rede nem banco, e é onde está a maior
+parte dos testes, porque é onde se perde dado.
+
+Dois pontos que não são óbvios e já foram decididos:
+
+- **A configuração mora em duas chaves.** `niko:configuracoes` é da pessoa e um dia
+  viaja; `niko:maquina` fica onde está (apps fixados, monitores, iniciar com o
+  sistema). A divisão acontece em `src/estado/armazenamentoDaConfiguracao.ts`, na
+  camada de armazenamento — em memória a configuração continua um objeto só, e por
+  isso nenhuma tela precisa saber disso. `src/estado/divisaoDaMaquina.ts` tem a lista.
+- **A validação profunda do que chega não foi duplicada na ponte.** Ela confere a
+  forma (JSON com `state`), e o `merge` de cada store valida campo a campo como já
+  fazia com o disco. Duplicar os esquemas criaria duas verdades para manter.
+
+`docs/conta/README.md` explica o desenho da criptografia e como criar o projeto na
+Supabase; `docs/conta/esquema.sql` são as tabelas, com RLS.
+
 ### Textos e estilos
 
 **Toda string de interface fica em `src/textos/textos.ts`** (~3.200 linhas, objeto `T`). Não escreva texto solto em componente. Os textos que citam o sistema usam as constantes `SISTEMA`, `COFRE` e `OCR`, que mudam conforme `NO_LINUX`.

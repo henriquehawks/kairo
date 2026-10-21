@@ -1,0 +1,59 @@
+name: Manter a conta ativa
+
+# Projeto no plano grátis da Supabase é pausado depois de uma semana sem atividade
+# no banco, e volta só quando alguém restaura na mão. Isso morde justamente quando
+# pouca gente está usando a conta: ninguém sincroniza, o projeto dorme, e a próxima
+# pessoa que tentar entrar recebe erro.
+#
+# Uma consulta por dia resolve. Ela passa pelo PostgREST e chega no Postgres, que é
+# o que conta como atividade. A chave é a publicável, a mesma que vai dentro do app,
+# e a RLS garante que a resposta seja uma lista vazia: não há dado de ninguém aqui.
+
+on:
+  schedule:
+    # 09:00 UTC, que é 06:00 em Brasília.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acordar:
+    name: Consultar o banco
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ler a configuração do projeto
+        id: conta
+        run: |
+          arquivo=servidor/configuracaoDaConta.ts
+          url=$(grep -oP 'https://[a-z0-9.-]+\.supabase\.co' "$arquivo" | head -1)
+          chave=$(grep -oP 'sb_publishable_[A-Za-z0-9_.-]+' "$arquivo" | head -1)
+          if [ -z "$url" ] || [ -z "$chave" ]; then
+            echo "não achei url ou chave em $arquivo"
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "chave=$chave" >> "$GITHUB_OUTPUT"
+
+      - name: Consultar
+        run: |
+          codigo=$(curl -s -o /tmp/resposta.txt -w '%{http_code}' \
+            "${{ steps.conta.outputs.url }}/rest/v1/dados?select=chave&limit=1" \
+            -H "apikey: ${{ steps.conta.outputs.chave }}" \
+            -H "Authorization: Bearer ${{ steps.conta.outputs.chave }}")
+          echo "HTTP $codigo"
+          cat /tmp/resposta.txt
+          echo ""
+          if [ "$codigo" != "200" ]; then
+            echo "O projeto pode estar pausado ou a chave mudou. Olhe o painel da Supabase."
+            exit 1
+          fi
+          # Resposta diferente de lista vazia significa RLS desligada: qualquer pessoa
+          # com a chave do app estaria lendo dados de todo mundo.
+          if [ "$(cat /tmp/resposta.txt)" != "[]" ]; then
+            echo "ALERTA: a consulta sem login devolveu dados. Confira a RLS das tabelas."
+            exit 1
+          fi

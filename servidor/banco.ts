@@ -97,6 +97,16 @@ export function gravar(itens: Record<string, string | null>, nome = "") {
   }
 }
 
+/** Estado da sincronização: fica na tabela meta, fora da tabela dados, para não sincronizar a si mesmo. */
+export function lerMeta(chave: string, nome = ""): string | null {
+  const linha = abrir(nome).prepare("SELECT valor FROM meta WHERE chave = ?").get(chave) as { valor?: string } | undefined;
+  return linha?.valor ?? null;
+}
+
+export function gravarMeta(chave: string, valor: string, nome = "") {
+  abrir(nome).prepare("INSERT INTO meta (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor").run(chave, valor);
+}
+
 export function reservarConfirmacao(id: string, aceitar: boolean, nome = ""): { reservada: boolean; situacao: "confirmado" | "cancelado" } {
   if (!/^[A-Za-z0-9:_-]{1,200}$/.test(id)) throw new Error("confirmacao_invalida");
   const db = abrir(nome);

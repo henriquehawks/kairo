@@ -15,6 +15,7 @@ import { lerAudio, definirVolume, definirMudo, ajustarSessao, lerTema, lerInicia
 import { ocrDaRequisicao } from "./ocr.ts";
 import { receberEventoDoGancho, ehRotaDoGancho, ouvirEventos, decidirPedido, estadoDaInstalacao, previaDaInstalacao, removerGanchos, abrirProjeto, trazerTerminal, ehRotaDaStatus, receberStatusDoClaude } from "./claude.ts";
 import { ehRotaDeAgente, receberEventoDeAgente, estadoDosAgentes, instalarAgente, removerAgente } from "./agentesDeCodigo.ts";
+import { ehRotaDaConta, responderConta } from "./rotasDaConta.ts";
 import { listarArquivos, receberArquivo, enviarConteudo, excluirArquivo, excluirArquivosDaMateria, baixarArquivo, abrirArquivoNoPrograma, exportarParaDownloads } from "./arquivos.ts";
 import { tipoDoComputador, estadoDoSistema, listarRedes, listarBluetooth, lerComputador, conectarRede, esquecerRede, desconectarRede, definirBrilho, definirRadio, abrirConfiguracoesDoSistema } from "./sistema.ts";
 
@@ -161,6 +162,11 @@ export const rotas: Connect.NextHandleFunction = async (req, res, proximo) => {
       if (!conexao[2] && req.method === "GET") return responder(res, 200, await lerConexao(servico, url.searchParams.get("forcar") === "1"));
       if (conexao[2] && req.method === "POST") return responder(res, 200, await salvarChaveConexao(servico, await lerCorpo(req)));
       if (conexao[2] && req.method === "DELETE") return responder(res, 200, await removerChaveConexao(servico));
+    }
+    if (ehRotaDaConta(caminho)) {
+      const corpo = req.method === "POST" ? await lerCorpo(req) : {};
+      const resposta = await responderConta(caminho, req.method ?? "GET", corpo);
+      return responder(res, resposta.status, resposta.corpo);
     }
     if (caminho === "/dados" && req.method === "GET") {
       const banco = String(req.headers["x-niko-banco"] ?? "");

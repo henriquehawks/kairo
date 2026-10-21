@@ -207,6 +207,40 @@ function enviar<T>(caminho: string, corpo: unknown) {
   return pedir<T>(caminho, { method: "POST", body: JSON.stringify(corpo) });
 }
 
+export interface EstadoDaConta {
+  disponivel: boolean;
+  emTestes?: boolean;
+  conectado?: boolean;
+  email?: string;
+  cofreAberto?: boolean;
+  configurada?: boolean;
+}
+
+export type ResultadoDeEntrada =
+  | { situacao: "entrou"; email: string; codigoDeRecuperacao?: string }
+  | { situacao: "confirmar_email"; email: string }
+  | { situacao: "cofre_travado"; email: string };
+
+export interface ResultadoDaSincronizacao {
+  situacao: "sincronizou" | "perguntar" | "sem_conta" | "cofre_fechado";
+  puxadas: string[];
+  enviadas: string[];
+  conflitos: string[];
+  resumo?: { local: { areas: number; atualizado: number }; remoto: { areas: number; atualizado: number } };
+  backup?: string;
+}
+
+/** A senha digitada nunca sai desta chamada: quem deriva e cifra é a ponte. */
+export const conta = {
+  estado: () => pedir<EstadoDaConta>("/conta"),
+  cadastrar: (email: string, senha: string) => enviar<ResultadoDeEntrada>("/conta/cadastrar", { email, senha }),
+  entrar: (email: string, senha: string) => enviar<ResultadoDeEntrada>("/conta/entrar", { email, senha }),
+  destravar: (codigo: string, senha: string) => enviar<{ ok: true }>("/conta/destravar", { codigo, senha }),
+  redefinir: (email: string) => enviar<{ ok: true }>("/conta/redefinir", { email }),
+  sair: () => enviar<{ ok: true }>("/conta/sair", {}),
+  sincronizar: (escolha?: "subir" | "baixar") => enviar<ResultadoDaSincronizacao>("/conta/sincronizar", { escolha }),
+};
+
 export const controle = {
   iniciar: () => pedir<{ aberto: boolean }>("/controle/iniciar"),
   alternarIniciar: (abertoAntes?: boolean) => enviar("/controle/ferramenta", { nome: "iniciar", abertoAntes }),

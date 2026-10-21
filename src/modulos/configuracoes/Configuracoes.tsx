@@ -3,7 +3,7 @@ import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  User, Palette, PanelTop, PanelBottom, CircleDot, Timer, Users, Volume2, Gauge, Maximize, Keyboard, EyeOff, Database, Terminal, Info, Code,
+  User, UserCircle, Palette, PanelTop, PanelBottom, CircleDot, Timer, Users, Volume2, Gauge, Maximize, Keyboard, EyeOff, Database, Terminal, Info, Code,
   GripVertical, Download, Upload, RotateCcw, Trash2, DatabaseBackup, Hand, Search, ArrowUpRight,
 } from "lucide-react";
 import { CabecalhoAba } from "../../componentes/CabecalhoAba";
@@ -30,6 +30,7 @@ import { mudarTema } from "../../janelas/area-de-trabalho/mudarTema";
 import { EditorFoto } from "../../componentes/FotoPerfil";
 import { SeletorDeFundo } from "./SeletorDeFundo";
 import { SecaoClaudeCode } from "./SecaoClaudeCode";
+import { SecaoConta } from "./SecaoConta";
 import { SecaoAssistive } from "./SecaoAssistive";
 import { EditorDeAtalhos } from "./EditorDeAtalhos";
 import { AlternadorAjuste, FaixaAjuste, GrupoAjuste, LinhaAjuste, NotaAjuste, Teclas } from "./LinhaAjuste";
@@ -54,6 +55,7 @@ const ICONES: Record<Secao, React.ReactNode> = {
   atalhos: <Keyboard size={13} />,
   privacidade: <EyeOff size={13} />,
   dados: <Database size={13} />,
+  conta: <UserCircle size={13} />,
   claude: <Terminal size={13} />,
   sobre: <Info size={13} />,
   desenvolvedor: <Code size={13} />,
@@ -740,6 +742,7 @@ export default function Configuracoes() {
       </>
     ),
     dados: <SecaoDados />,
+    conta: <SecaoConta />,
     claude: <SecaoClaudeCode />,
     assistive: <SecaoAssistive />,
     sobre: (

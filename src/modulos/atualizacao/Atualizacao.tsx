@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ArrowUpRight, ChevronDown, Download, Globe, History, RefreshCw } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Download, History, RefreshCw } from "lucide-react";
 import { useInterface } from "../../estado/interface";
 import { novidadesAte, type VersaoComNovidades } from "../../utilitarios/novidades";
 import { formatar } from "../../utilitarios/datas";
@@ -72,7 +72,6 @@ export default function Atualizacao() {
         </span>
         <nav className="atualizacao-links" aria-label={T.app.nome}>
           <a href={REPOSITORIO} target="_blank" rel="noopener noreferrer"><Marca marca="github" tamanho={13} monocromatica />{T.atualizacao.github}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
-          <a href="Em breve" target="_blank" rel="noopener noreferrer"><Globe size={13} />{T.atualizacao.site}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
           <a href={VERSOES} target="_blank" rel="noopener noreferrer"><History size={13} />{T.atualizacao.versoes}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
           <a href="https://github.com/henriquehawks" target="_blank" rel="noopener noreferrer"><img src="/criador.jpg" width={16} height={16} alt="" className="atualizacao-link-foto" />{T.atualizacao.githubCriador}<ArrowUpRight size={12} className="atualizacao-link-seta" /></a>
         </nav>
