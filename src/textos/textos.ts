@@ -175,6 +175,15 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.2.9",
+        data: "2026-10-21",
+        mudancas: [
+          ["melhoria", "Versão de manutenção: nada muda no funcionamento do app."],
+          ["melhoria", "A foto do criador nesta tela foi atualizada."],
+          ["melhoria", "A documentação interna do projeto foi revisada e passou a acompanhar o código, o que não altera nada do que aparece na tela."],
+        ],
+      },
+      {
         versao: "0.2.8",
         data: "2026-10-20",
         mudancas: [
