@@ -181,6 +181,13 @@ interface PropsModal {
 export function Modal({ aberto, titulo, aoFechar, children, largo }: PropsModal) {
   const caixa = useRef<HTMLDivElement>(null);
   const focoAnterior = useRef<Element | null>(null);
+  // Quase todas as telas passam uma função nova em aoFechar a cada render. Se o efeito abaixo
+  // dependesse dela, cada tecla digitada desmontaria e remontaria o foco inicial, jogando o cursor
+  // de volta no primeiro campo do formulário no meio da digitação.
+  const fechar = useRef(aoFechar);
+  useEffect(() => {
+    fechar.current = aoFechar;
+  });
 
   useEffect(() => {
     if (!aberto) return;
@@ -192,7 +199,7 @@ export function Modal({ aberto, titulo, aoFechar, children, largo }: PropsModal)
     const aoTeclar = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
-        aoFechar();
+        fechar.current();
       }
       if (e.key === "Tab" && caixa.current) {
         const focaveis = Array.from(caixa.current.querySelectorAll<HTMLElement>("button, input, textarea, select, [tabindex='0']")).filter((el) => !el.hasAttribute("disabled"));
@@ -214,7 +221,7 @@ export function Modal({ aberto, titulo, aoFechar, children, largo }: PropsModal)
       window.removeEventListener("keydown", aoTeclar, true);
       if (focoAnterior.current instanceof HTMLElement) focoAnterior.current.focus();
     };
-  }, [aberto, aoFechar]);
+  }, [aberto]);
 
   const destino = document.getElementById("camada-sistema") ?? document.body;
 

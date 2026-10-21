@@ -144,6 +144,16 @@ test("a espera da ponte aguenta uma abertura lenta e avisa antes de desistir", a
   for (const t of [0, 1, 5, 20, 500]) assert.ok(intervaloDaTentativa(t) <= 2_000, String(t));
 });
 
+test("modal não refaz o foco inicial a cada tecla digitada no formulário", () => {
+  const fonte = readFileSync(new URL("../src/componentes/basicos.tsx", import.meta.url), "utf8");
+  // Quase toda tela passa aoFechar como função nova a cada render. Quando o efeito do foco inicial
+  // dependia dela, cada tecla refazia o efeito e devolvia o cursor ao primeiro campo do formulário:
+  // digitar o valor de uma conta recorrente jogava de volta para a descrição.
+  assert.ok(!fonte.includes("[aberto, aoFechar]"), "o efeito de foco do modal não pode depender da identidade de aoFechar");
+  assert.ok(fonte.includes("}, [aberto]);"), "o efeito de foco do modal depende só de aberto");
+  assert.ok(fonte.includes("fechar.current()"), "o Escape precisa ler aoFechar por ref, para continuar fechando");
+});
+
 test("janela sobreposta não pinta painel de erro por cima da tela", () => {
   const fonte = readFileSync(new URL("../src/main.tsx", import.meta.url), "utf8");
   // A sobreposta da ilha cobre o monitor inteiro: um painel nela viraria uma faixa sobre tudo.
