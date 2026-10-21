@@ -179,6 +179,14 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.2",
+        data: "2026-10-21",
+        mudancas: [
+          ["melhoria", "Esta versão não muda nada no que você vê ou faz. Ela prepara uma função que ainda está sendo construída: uma conta opcional para seus dados acompanharem você ao trocar de computador."],
+          ["melhoria", "A conta sai desligada e não aparece no app. Quando estiver pronta, será opcional: quem não criar conta continua com tudo guardado só neste computador, como hoje."],
+        ],
+      },
+      {
         versao: "0.3.1",
         data: "2026-10-21",
         mudancas: [
