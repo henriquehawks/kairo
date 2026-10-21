@@ -35,6 +35,10 @@ export const T = {
     interfaceFalhouDica: "Houve uma falha ao carregar a interface. Recarregue o Kairo para tentar novamente. Alterações ainda não salvas podem ser perdidas.",
     voltarInicio: "Voltar ao início",
     recarregar: "Recarregar o Kairo",
+    ponteIniciando: "Iniciando o serviço local…",
+    ponteIniciandoDica: NO_LINUX
+      ? "A primeira abertura depois de instalar ou atualizar demora mais que as outras. Isso acontece só desta vez."
+      : "A primeira abertura depois de instalar ou atualizar demora mais, porque o Windows confere os arquivos novos antes de liberá-los. Isso acontece só desta vez.",
     ponteFalhou: "O Kairo não conseguiu iniciar o serviço local.",
     tentarNovamente: "Tentar novamente",
     ponteFalhouDica: NO_LINUX

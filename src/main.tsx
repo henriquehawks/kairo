@@ -37,6 +37,7 @@ import "./estilos/telas/conquistas.css";
 import "./estilos/telas/configuracoes.css";
 import "./estilos/telas/busca.css";
 import { iniciarArmazenamento } from "./ponte/armazenamento";
+import { esperarPonte } from "./ponte/esperarPonte";
 import { JANELA, NATIVO, prepararPonte, desviarLinksExternos } from "./desktop/desktop";
 import { T } from "./textos/textos";
 import { LimiteDeErro } from "./componentes/LimiteDeErro";
@@ -44,9 +45,10 @@ import { LimiteDeErro } from "./componentes/LimiteDeErro";
 document.documentElement.dataset.tema = "claro";
 
 const SELETOR_DAS_SOBREPOSTAS = ".ilha-raiz, .ilha-gatilho, .ilha-barra, .ilha-pop, .dock, .dock-gatilho, .dock-previa";
+const JANELA_SOBREPOSTA = JANELA === "ilha" || JANELA === "dock" || JANELA === "assistive";
 
 async function iniciar() {
-  const sobreposta = JANELA === "ilha" || JANELA === "dock" || JANELA === "assistive";
+  const sobreposta = JANELA_SOBREPOSTA;
   if (sobreposta) document.documentElement.classList.add("janela-sobreposta");
   document.addEventListener("contextmenu", (e) => {
     const alvo = e.target as HTMLElement | null;
@@ -56,10 +58,15 @@ async function iniciar() {
   await prepararPonte();
   desviarLinksExternos();
   let modo = "local";
-  for (let tentativa = 0; tentativa < (NATIVO ? 5 : 1); tentativa++) {
+  if (NATIVO) {
+    await esperarPonte({
+      tentar: async () => (modo = await iniciarArmazenamento()) === "banco",
+      aguardar: (ms) => new Promise((r) => setTimeout(r, ms)),
+      agora: () => Date.now(),
+      avisar: mostrarIniciando,
+    });
+  } else {
     modo = await iniciarArmazenamento();
-    if (modo === "banco") break;
-    await new Promise((r) => setTimeout(r, 500));
   }
   const raiz = document.getElementById("raiz");
   if (!raiz) return;
@@ -82,22 +89,36 @@ async function iniciar() {
   );
 }
 
-function mostrarFalhaInicial() {
+function mostrarPainelInicial(titulo: string, dica: string, acao?: { texto: string; aoClicar: () => void }) {
+  // As sobrepostas são transparentes e cobrem a tela toda: um painel nelas viraria uma faixa por cima de tudo.
+  // Quem conta o que houve é a janela do sistema.
+  if (JANELA_SOBREPOSTA) return;
   const raiz = document.getElementById("raiz");
   if (!raiz) return;
   const painel = document.createElement("div");
   painel.className = "falha-ponte";
-  const titulo = document.createElement("h1");
-  titulo.textContent = T.app.ponteFalhou;
-  const dica = document.createElement("p");
-  dica.textContent = T.app.ponteFalhouDica;
-  const repetir = document.createElement("button");
-  repetir.className = "botao botao-primario";
-  repetir.textContent = T.app.tentarNovamente;
-  repetir.onclick = () => window.location.reload();
-  painel.append(titulo, dica, repetir);
+  const cabecalho = document.createElement("h1");
+  cabecalho.textContent = titulo;
+  const texto = document.createElement("p");
+  texto.textContent = dica;
+  painel.append(cabecalho, texto);
+  if (acao) {
+    const botao = document.createElement("button");
+    botao.className = "botao botao-primario";
+    botao.textContent = acao.texto;
+    botao.onclick = acao.aoClicar;
+    painel.append(botao);
+  }
   raiz.replaceChildren(painel);
   if (NATIVO) void import("@tauri-apps/api/webviewWindow").then(({ getCurrentWebviewWindow }) => getCurrentWebviewWindow().show()).catch(() => undefined);
+}
+
+function mostrarIniciando() {
+  mostrarPainelInicial(T.app.ponteIniciando, T.app.ponteIniciandoDica);
+}
+
+function mostrarFalhaInicial() {
+  mostrarPainelInicial(T.app.ponteFalhou, T.app.ponteFalhouDica, { texto: T.app.tentarNovamente, aoClicar: () => window.location.reload() });
 }
 
 void iniciar().catch(mostrarFalhaInicial);

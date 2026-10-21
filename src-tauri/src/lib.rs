@@ -304,7 +304,13 @@ fn iniciar_ponte(app: &AppHandle, token: &str, reinicio: bool) {
     let registrar = |texto: String| {
         if let Some(pasta) = &dados {
             let _ = std::fs::create_dir_all(pasta);
-            let _ = std::fs::write(pasta.join("niko.log"), texto);
+            // Acrescenta em vez de sobrescrever: a mensagem de erro manda fechar e abrir de novo,
+            // e era exatamente isso que apagava o registro da falha antes de alguém poder lê-lo.
+            let agora = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+            if let Ok(mut arquivo) = std::fs::OpenOptions::new().create(true).append(true).open(pasta.join("niko.log")) {
+                use std::io::Write;
+                let _ = writeln!(arquivo, "{agora} {texto}");
+            }
         }
     };
     let Ok(pasta) = app.path().resource_dir() else {

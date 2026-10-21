@@ -107,6 +107,51 @@ function prepararTransicao(t, opcoes = {}) {
   return { raiz, doc, consulta, animacoes, transicoes, eventos };
 }
 
+test("a espera da ponte aguenta uma abertura lenta e avisa antes de desistir", async () => {
+  const { esperarPonte, intervaloDaTentativa, ESPERA_MAXIMA_MS, AVISAR_APOS_MS } = await vite.ssrLoadModule("/src/ponte/esperarPonte.ts");
+  // Numa máquina recém-instalada a ponte pode levar segundos; o orçamento precisa ser bem maior que isso.
+  assert.ok(ESPERA_MAXIMA_MS >= 30_000, String(ESPERA_MAXIMA_MS));
+  const relogio = { t: 0 };
+  const rodar = async (sucessoNoMs, extras = {}) => {
+    relogio.t = 0;
+    const avisos = [];
+    const esperas = [];
+    const ok = await esperarPonte({
+      tentar: async () => relogio.t >= sucessoNoMs,
+      aguardar: async (ms) => { esperas.push(ms); relogio.t += ms; },
+      agora: () => relogio.t,
+      avisar: () => avisos.push(relogio.t),
+      ...extras,
+    });
+    return { ok, avisos, esperas, fim: relogio.t };
+  };
+  // Ponte pronta na hora: nenhuma espera, nenhum aviso.
+  assert.deepEqual(await rodar(0), { ok: true, avisos: [], esperas: [], fim: 0 });
+  // Oito segundos de demora, que hoje viravam erro, agora são esperados até o fim.
+  const lenta = await rodar(8_000);
+  assert.equal(lenta.ok, true);
+  assert.ok(lenta.fim >= 8_000 && lenta.fim < ESPERA_MAXIMA_MS, String(lenta.fim));
+  assert.equal(lenta.avisos.length, 1, "o aviso aparece uma vez só");
+  assert.ok(lenta.avisos[0] >= AVISAR_APOS_MS, String(lenta.avisos[0]));
+  // Ponte que nunca sobe: desiste, sem estourar o limite.
+  const nunca = await rodar(Infinity);
+  assert.equal(nunca.ok, false);
+  assert.equal(nunca.fim, ESPERA_MAXIMA_MS);
+  assert.ok(nunca.esperas.every((ms) => ms > 0), "nenhuma espera de zero, que viraria laço quente");
+  // O intervalo cresce mas não passa de dois segundos.
+  assert.equal(intervaloDaTentativa(0), 250);
+  assert.ok(intervaloDaTentativa(3) > intervaloDaTentativa(0));
+  for (const t of [0, 1, 5, 20, 500]) assert.ok(intervaloDaTentativa(t) <= 2_000, String(t));
+});
+
+test("janela sobreposta não pinta painel de erro por cima da tela", () => {
+  const fonte = readFileSync(new URL("../src/main.tsx", import.meta.url), "utf8");
+  // A sobreposta da ilha cobre o monitor inteiro: um painel nela viraria uma faixa sobre tudo.
+  assert.ok(fonte.includes("if (JANELA_SOBREPOSTA) return;"), "o painel precisa sair cedo nas sobrepostas");
+  assert.ok(fonte.includes("esperarPonte({"), "a espera paciente precisa estar ligada no início");
+  assert.ok(!fonte.includes("NATIVO ? 5 : 1"), "a espera curta de 5 tentativas saiu");
+});
+
 test("círculo do tema nasce no centro do botão e cobre os quatro cantos mesmo perto da borda", () => {
   const { x, y, raio } = circuloDoTema(origemDoTema, 1200, 800);
   assert.deepEqual([x, y], [200, 690]);
