@@ -520,7 +520,7 @@ function FocarJanelaDoProcesso($processoId) {
   $atual = [int]$processoId
   for ($nivel = 0; $nivel -lt 10 -and $atual -gt 4; $nivel++) {
     $p = Get-Process -Id $atual -ErrorAction SilentlyContinue
-    if ($p -and $p.MainWindowHandle -ne [IntPtr]::Zero -and $p.ProcessName -notmatch '^(explorer|niko)$') {
+    if ($p -and $p.MainWindowHandle -ne [IntPtr]::Zero -and $p.ProcessName -notmatch '^(explorer|kairo)$') {
       [NikoControle]::Focar($p.MainWindowHandle) | Out-Null
       return $p.ProcessName
     }

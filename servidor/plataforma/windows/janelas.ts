@@ -81,7 +81,7 @@ public static class NikoJanelas {
     uint pid; GetWindowThreadProcessId(frente, out pid);
     string nome = "";
     try { nome = System.Diagnostics.Process.GetProcessById((int)pid).ProcessName; } catch { }
-    if (nome == "niko") return ultimaFrente;
+    if (nome == "kairo") return ultimaFrente;
     ultimaFrente = frente;
     return frente;
   }
@@ -181,7 +181,7 @@ while ($true) {
           $caminhos[$j.Pid] = @{ nome = $(if ($p) { $p.ProcessName } else { '' }); caminho = $(try { $p.Path } catch { $null }); descricao = $(try { $p.MainModule.FileVersionInfo.FileDescription } catch { $null }) }
         }
         $info = $caminhos[$j.Pid]
-        if ($info.nome -eq 'niko' -or ($info.nome -eq 'ApplicationFrameHost' -and $j.Titulo -eq '')) { continue }
+        if ($info.nome -eq 'kairo' -or ($info.nome -eq 'ApplicationFrameHost' -and $j.Titulo -eq '')) { continue }
         $iconeDoGrupo = IconeDoGrupo $j.IconeDoGrupo
         $lista += @{ id = [string]$j.Id; pid = $j.Pid; titulo = $j.Titulo; minimizada = $j.Minimizada; ativa = $j.Ativa; app = $info.nome; nome = $(if ($info.descricao) { $info.descricao } else { $info.nome }); caminho = $info.caminho; icone = $(if ($iconeDoGrupo) { $iconeDoGrupo } else { Icone $info.caminho }); monitor = $j.Monitor; grupo = $j.Grupo; nomeDoGrupo = $j.NomeDoGrupo }
       }

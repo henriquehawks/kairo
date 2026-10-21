@@ -131,12 +131,12 @@ async function montarLista(): Promise<{ janelas: JanelaAberta[] }> {
   const brutas = await coletar();
   const programas = new Map(brutas.map((j) => [j.id, j.pid > 0 ? (lerArquivo(`/proc/${j.pid}/comm`) ?? "") : ""]));
   const emFoco = brutas.find((j) => j.ativa && !j.minimizada);
-  const focoNoNiko = emFoco !== undefined && programas.get(emFoco.id) === "niko";
+  const focoNoNiko = emFoco !== undefined && programas.get(emFoco.id) === "kairo";
   if (emFoco && !focoNoNiko) ultimaFrente = { fonte, id: emFoco.id };
   const idFrente = focoNoNiko ? (ultimaFrente?.fonte === fonte ? ultimaFrente.id : 0) : (emFoco?.id ?? 0);
   const janelas = brutas.flatMap((j): JanelaAberta[] => {
     const programa = programas.get(j.id) ?? "";
-    if (programa === "niko") return [];
+    if (programa === "kairo") return [];
     const app = acharAppDaJanela(j.classe, programa);
     return [{ id: String(j.id), pid: j.pid, titulo: j.titulo, minimizada: j.minimizada, ativa: j.id === idFrente && !j.minimizada, app: programa || j.classe, nome: app?.nome ?? (programa || j.classe), caminho: executavel(j.pid), icone: app ? iconeDoApp(app.icone) : null, ...(j.centro ? { centro: j.centro } : {}) }];
   });
