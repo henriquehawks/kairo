@@ -175,11 +175,18 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
-        versao: "0.2.7",
-        data: "2026-10-28",
+        versao: "0.2.8",
+        data: "2026-10-20",
         mudancas: [
-          ["novo", "testelegal"],
-          ["correcao", "teste mt legal"],
+          ["correcao", "A página Novidades mostrava um texto de teste na versão 0.2.7. Agora ela mostra o que realmente mudou em cada versão."],
+          ["melhoria", "As versões passam a ser publicadas por um processo automático. Na prática, as atualizações chegam mais depressa e sempre completas: o .exe, o .msi, o .deb, o .rpm e o AppImage saem juntos, do mesmo build."],
+        ],
+      },
+      {
+        versao: "0.2.7",
+        data: "2026-10-20",
+        mudancas: [
+          ["melhoria", "Versão de teste do processo de publicação automática. Nada mudou no app."],
         ],
       },
       {
