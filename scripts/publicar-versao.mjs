@@ -108,7 +108,7 @@ async function publicar() {
   git("tag", `v${versao}`);
   git("push", "origin", `v${versao}`);
 
-  console.log(`\nTag v${versao} empurrada. O workflow Publicar versão assumiu daqui:\n  ${endereco()}/actions\nEm ~25 min a release v${versao} sai com o .exe, o .msi, o latest.json, o .deb, o .rpm e o AppImage.`);
+  console.log(`\nTag v${versao} empurrada. O workflow Publicar versão assumiu daqui:\n  ${endereco()}/actions\nEm ~15 min a release v${versao} sai com o .exe, o .msi, o latest.json, o .deb, o .rpm e o AppImage.`);
 }
 
 const esteArquivo = fileURLToPath(import.meta.url);
