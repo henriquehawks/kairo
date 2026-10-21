@@ -364,7 +364,7 @@ Passando nas checagens, ele roda `pnpm verificar` e `pnpm test`, sincroniza a ve
 - `pnpm publicar 0.2.8 --ensaio` faz todas as checagens e mostra o que faria, sem alterar nem empurrar nada.
 - `pnpm publicar 0.2.8 --sem-testes` pula tipos e testes, para quando você acabou de rodá-los.
 
-Um teste em `scripts/interface.test.mjs` cobre a mesma regra pelo lado de dentro: a versão de `package.json` precisa ter notas em `docs/releases/`, com o título certo, e ser a primeira entrada do histórico, com data no formato `AAAA-MM-DD` e tipos conhecidos (`novo`, `melhoria`, `correcao`). Assim o esquecimento aparece no `pnpm test`, e não no workflow depois do push — onde consertar custa apagar a tag e a release.
+Um teste em `scripts/interface.test.mjs` cobre a mesma regra pelo lado de dentro: a versão de `package.json` precisa ter notas em `docs/releases/`, com o título certo, e uma entrada no histórico, com data no formato `AAAA-MM-DD` e tipos conhecidos (`novo`, `melhoria`, `correcao`); o histórico inteiro precisa estar em ordem, da versão mais nova para a mais antiga. A entrada da próxima versão pode existir antes de o número subir, que é o estado em que o `pnpm notas` deixa o repositório. Assim o esquecimento aparece no `pnpm test`, e não no workflow depois do push — onde consertar custa apagar a tag e a release.
 
 Os dois buildes rodam **ao mesmo tempo**: o do Windows gera o `.exe`, o `.msi` e o `latest.json` assinados, o do Linux gera o `.deb`, o `.rpm` e o AppImage, cada um guardando os arquivos como artefato. Só então o último job cria a release com os seis de uma vez. São ~13 minutos no total.
 
