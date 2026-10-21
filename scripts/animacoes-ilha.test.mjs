@@ -69,7 +69,7 @@ test("a animação não transforma etapa anterior em confirmação de sucesso", 
   assert.equal("concluida" in estado.anterior, false);
 });
 
-test("destino do personagem respeita escala e não muda seu centro ao aumentar", () => {
+test("Destino do personagem respeita escala e não muda seu centro ao aumentar", () => {
   const origem = { left: 100, top: 0, width: 990, height: 375 };
   const destino = calcularDestinoPersonagem(origem, { left: 175, top: 105, width: 105, height: 105 }, 1.5);
   assert.deepEqual(destino, { x: 50, y: 70, escala: 1 });
