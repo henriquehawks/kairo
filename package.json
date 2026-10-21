@@ -14,6 +14,7 @@
         "ponte:build": "node scripts/construir-ponte.mjs",
         "tauri": "tauri",
         "app": "tauri build",
+        "versao": "node scripts/sincronizar-versao.mjs",
         "lancar": "node scripts/lancar-versao.mjs",
         "lancar:verificar": "node scripts/lancar-versao.mjs --verificar",
         "lancar:testar": "node --test scripts/versao-release.test.mjs",

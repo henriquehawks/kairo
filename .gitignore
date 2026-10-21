@@ -33,6 +33,7 @@ scripts/*
 !scripts/interface.test.mjs
 !scripts/ilha.test.mjs
 !scripts/testar.mjs
+!scripts/sincronizar-versao.mjs
 testes/
 
 # Vídeo e material de divulgação
