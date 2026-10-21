@@ -9,6 +9,7 @@ import {
 import { CabecalhoAba } from "../../componentes/CabecalhoAba";
 import { Botao, Campo, Modal, Segmentado, AvisoFaixa, LinhaAlternador, Alternador, ConfirmarModal } from "../../componentes/basicos";
 import { Personagem } from "../../personagens/Personagem";
+import { POSICAO_PADRAO, noTopo } from "../../janelas/ilha/posicao";
 import { useConfig, BARRA_PADRAO, CATEGORIAS_DE_AVISO, ESCALAS_DO_DOCK, type ModoBorda, type Paleta, type Tema, type RepousoIlha, type AbaIlha, CONFIG_PADRAO } from "../../estado/configuracoes";
 import { useAgentes, AGENTES } from "../../estado/agentes";
 import { useComunicacao } from "../../estado/comunicacao";
@@ -127,6 +128,7 @@ function validarVisual(dados: unknown): Partial<ReturnType<typeof useConfig.getS
       abrirHover: i.abrirHover === true,
       laterais: i.laterais !== false,
       midiaNaCompacta: i.midiaNaCompacta !== false,
+      posicao: useConfig.getState().ilha.posicao,
     };
   }
   if (v.dock && typeof v.dock === "object") {
@@ -528,6 +530,10 @@ export default function Configuracoes() {
         </LinhaAjuste>
         <LinhaAjuste rotulo={T.configuracoes.tamanhoIlha}>
           <Segmentado<"pequena" | "media" | "grande"> rotulo={T.configuracoes.tamanhoIlha} valor={cfg.ilha.tamanho} aoMudar={(tamanho) => cfg.definirIlha({ tamanho })} opcoes={(["pequena", "media", "grande"] as const).map((t) => ({ valor: t, rotulo: T.configuracoes.tamanhos[t] }))} />
+        </LinhaAjuste>
+        <LinhaAjuste rotulo={T.configuracoes.posicaoIlha} dica={T.configuracoes.posicaoIlhaDica}>
+          <span className="ajuste-dica">{noTopo(cfg.ilha.posicao) ? T.configuracoes.posicaoNoTopo : T.configuracoes.posicaoLivre(Math.round(cfg.ilha.posicao.x * 100), Math.round(cfg.ilha.posicao.y * 100))}</span>
+          <Botao icone={<RotateCcw size={13} />} disabled={noTopo(cfg.ilha.posicao)} onClick={() => cfg.definirIlha({ posicao: POSICAO_PADRAO })}>{T.configuracoes.voltarAoTopo}</Botao>
         </LinhaAjuste>
         <LinhaAjuste rotulo={T.configuracoes.repousoIlha}>
           <Segmentado<RepousoIlha> rotulo={T.configuracoes.repousoIlha} valor={cfg.ilha.repouso} aoMudar={(repouso) => cfg.definirIlha({ repouso })} opcoes={(Object.keys(T.configuracoes.repousos) as RepousoIlha[]).map((r) => ({ valor: r, rotulo: T.configuracoes.repousos[r] }))} />

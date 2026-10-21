@@ -7,6 +7,7 @@ import { FUNDO_DESTAQUE, hexValido, misturar } from "../utilitarios/cores";
 import type { Buscador } from "../utilitarios/buscaApps";
 import { ATALHOS_PADRAO, atalhosComPadrao, type AcaoGlobal } from "../utilitarios/atalhos";
 import { ASSISTIVE_PADRAO, validarAssistive, type ConfigAssistive } from "../janelas/assistive/regras";
+import { POSICAO_PADRAO, type PosicaoIlha } from "../janelas/ilha/posicao";
 import { configuracoesValidas } from "../utilitarios/configuracoesValidas";
 import { objeto } from "../utilitarios/validacoes";
 import { aparenciaPadrao, type AparenciaAgente } from "../personagens/personalizacao";
@@ -125,6 +126,7 @@ export interface ConfigIlha {
   iconesDaBarra: Record<IconeDaBarra, boolean>;
   monitor: string;
   midiaNaCompacta: boolean;
+  posicao: PosicaoIlha;
 }
 
 export type CategoriaDeAviso = "lembretes" | "habitos" | "estudos" | "financas" | "conexoes" | "codigo" | "conquistas" | "consumo";
@@ -207,6 +209,7 @@ export const CONFIG_PADRAO: Configuracoes = {
     iconesDaBarra: { rede: true, volume: true, bateria: true },
     monitor: "",
     midiaNaCompacta: true,
+    posicao: POSICAO_PADRAO,
   },
   dock: { ativo: true, modo: "inteligente", favoritos: ["chat", "journal", "estudos", "financas", "calendario"], atalhos: [], fixados: [], escala: 1, appsDeTodosOsMonitores: false, reservarEspaco: true, ampliar: true, mostrarIniciar: true, mostrarBusca: true, fundo: FUNDO_PADRAO_DAS_BORDAS, opacidade: 1, monitores: "todos", buscador: "google" },
   assistive: ASSISTIVE_PADRAO,

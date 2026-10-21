@@ -1,6 +1,7 @@
 import { ESCALAS_DO_DOCK, LIMITE_DE_FIXADOS, type AppFixado, type Configuracoes } from "../estado/configuracoes";
 import { exigir, objeto } from "./validacoes";
 import { validarAssistive } from "../janelas/assistive/regras";
+import { posicaoValida } from "../janelas/ilha/posicao";
 import type { AgenteId } from "../tipos";
 import { aparenciaValida, personaValida, textoDeIdentidade } from "../personagens/personalizacao";
 import { acessoriosValidos, corAcessorioValida } from "../personagens/acessorios";
@@ -63,6 +64,7 @@ export function configuracoesValidas(valor: unknown, padrao: Configuracoes): Con
   c.ilha.notificacoes = escolher(c.ilha.notificacoes, ["todas", "importantes", "nenhuma"], padrao.ilha.notificacoes);
   c.ilha.fechamentoSeg = c.ilha.fechamentoSeg === -1 ? -1 : limitar(c.ilha.fechamentoSeg, 0, 300);
   c.ilha.esconderSeg = limitar(c.ilha.esconderSeg, 0, 300);
+  c.ilha.posicao = posicaoValida(objeto(valor) && objeto(valor.ilha) ? valor.ilha.posicao : undefined);
   c.ilha.ordemAbas = [...new Set(c.ilha.ordemAbas)];
   if (!c.ilha.ordemAbas.includes("time")) {
     const codigo = c.ilha.ordemAbas.indexOf("claude");

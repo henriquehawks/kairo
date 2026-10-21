@@ -1021,6 +1021,7 @@ export const T = {
     fixar: "Fixar a ilha aberta",
     desafixar: "Soltar a ilha",
     expandir: "Expandir a ilha",
+    arrastar: "Arraste para mover a ilha. Use as setas do teclado para ajustar.",
     favorito: (n: string) => `${n} está livre`,
   },
   pomodoro: {
@@ -2791,7 +2792,7 @@ export const T = {
     palavrasChave: {
       geral: "nome perfil foto iniciar windows virada dia 4h",
       aparencia: "tema claro escuro cor destaque paleta escala tamanho animacoes barra lateral inicio blocos",
-      ilha: "abas topo esconder fixo inteligente fechar hover laterais barra repouso fundo opacidade",
+      ilha: "abas topo esconder fixo inteligente fechar hover laterais barra repouso fundo opacidade posicao lugar arrastar mover flutuante",
       assistive: "assistivetouch flutuante bolinha apps aplicativos atalhos arrastar vidro menu rapido",
       dock: "atalhos favoritos baixo ampliar fundo opacidade",
       pomodoro: "foco pausa ciclos timer tempo tique",
@@ -2890,6 +2891,11 @@ export const T = {
     repousos: { nada: "Só a forma", relogio: "Relógio", midia: "Mídia", agente: "Agente favorito" },
     tamanhoIlha: "Tamanho",
     tamanhos: { pequena: "Pequena", media: "Média", grande: "Grande" },
+    posicaoIlha: "Lugar na tela",
+    posicaoIlhaDica: "Arraste a ilha fechada para onde quiser, ou use as setas do teclado com ela em foco. Soltando perto da borda de cima, ela volta a ser o entalhe colado no topo; em qualquer outro lugar ela fica flutuando, e abre para cima quando está na metade de baixo.",
+    posicaoNoTopo: "No topo, centralizada",
+    posicaoLivre: (x: number, y: number) => `A ${x}% da esquerda e ${y}% do topo`,
+    voltarAoTopo: "Voltar ao topo",
     corDeFundo: "Cor de fundo",
     fundosProntos: { grafite: "Grafite", preto: "Preto", noite: "Azul-noite", branco: "Branco" },
     outraCor: "Outra cor",

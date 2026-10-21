@@ -41,6 +41,7 @@ import { atributosDoFundo, usarAparenciaDeBorda, variaveisDaBorda } from "../apa
 import { movimentoDaVisibilidade } from "./animacoes/visibilidade";
 import type { AgenteId, EstadoAgente, ServicoId } from "../../tipos";
 import { alturaDasConexoes } from "./alturaDasConexoes";
+import { LIMIAR_DO_ARRASTO, ancoraDaIlha, posicaoDoArrasto } from "./posicao";
 import { atrasoDeFechamento, editandoNaIlha } from "./fechamento";
 import { VisaoTime } from "./VisaoTime";
 import "./ilha.css";
@@ -169,6 +170,17 @@ export function Ilha() {
   const raiz = useRef<HTMLDivElement>(null);
   const corpoIlha = useRef<HTMLDivElement>(null);
   const [sobre, setSobre] = useState(false);
+  const definirIlha = useConfig((s) => s.definirIlha);
+  const [tela, setTela] = useState(() => ({ largura: window.innerWidth, altura: window.innerHeight }));
+  const [arrastando, setArrastando] = useState(false);
+  const [arrasto, setArrasto] = useState<{ centro: number; topo: number } | null>(null);
+  const gesto = useRef<{ id: number; x: number; y: number; centro: number; topo: number; moveu: boolean } | null>(null);
+  const arrastouAgora = useRef(false);
+  useEffect(() => {
+    const medir = () => setTela({ largura: window.innerWidth, altura: window.innerHeight });
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
   const atualizacao = useAtualizacao();
   useEffect(() => {
     const primeira = window.setTimeout(() => void useAtualizacao.getState().verificar(), 15000);
@@ -178,7 +190,7 @@ export function Ilha() {
       window.clearInterval(sempre);
     };
   }, []);
-  usarAreaInterativa([".ilha-raiz:not(.ilha-raiz-oculta) .ilha", ".ilha-gatilho", ".ilha-barra-aba", ".ilha-pop"]);
+  usarAreaInterativa([".ilha-raiz:not(.ilha-raiz-oculta) .ilha", ".ilha-gatilho", ".ilha-barra-aba", ".ilha-pop", ".ilha-capa-arrasto"]);
   usarCursorFora(useCallback(() => setSobre(false), []));
   const aoClicarForaDaJanela = useRef<() => void>(() => undefined);
   usarCliqueFora(useCallback(() => aoClicarForaDaJanela.current(), []));
@@ -264,7 +276,7 @@ export function Ilha() {
     };
   }, []);
   const lateraisLivres = NATIVO ? lateraisLivresNativo : areaEmFocoNoNavegador;
-  const coberta = cfg.modo === "inteligente" && !revelada && (NATIVO ? frente.cobre : !areaEmFocoNoNavegador && alguemCobre({ x: (window.innerWidth - LARGURA_EXPANDIDA) / 2, y: 0, w: LARGURA_EXPANDIDA, h: 40 }));
+  const coberta = cfg.modo === "inteligente" && !revelada && (NATIVO ? frente.cobre : !areaEmFocoNoNavegador && alguemCobre({ x: cfg.posicao.x * tela.largura - LARGURA_EXPANDIDA / 2, y: cfg.posicao.y * tela.altura, w: LARGURA_EXPANDIDA, h: 40 }));
   const pomodoroIniciado = pomodoro.rodando || pomodoro.restanteMs != null;
   const agora = useAgora(1000, pomodoro.rodando && estado !== "expandida");
   const relogio = useAgora(15000, cfg.repouso === "relogio" || cfg.repouso === "agente" || cfg.repouso === "midia");
@@ -279,13 +291,12 @@ export function Ilha() {
     if (estadoEfetivo !== "expandida" || abaAtual !== "conexoes") setConexaoSelecionada(null);
   }, [estadoEfetivo, abaAtual]);
   const oculta = estadoEfetivo === "escondida";
-  const movimentoDeVisibilidade = movimentoDaVisibilidade(oculta, Boolean(reduzirAnimacoes));
 
   useEffect(() => {
-    if (cfg.modo !== "esconder" || estadoEfetivo !== "compacta" || sobre || barraEmUso || revelacao || frescos > 0 || pomodoro.rodando || atualizacao.fase !== "nada" || pedidoPendente) return;
+    if (cfg.modo !== "esconder" || estadoEfetivo !== "compacta" || sobre || barraEmUso || revelacao || frescos > 0 || pomodoro.rodando || atualizacao.fase !== "nada" || pedidoPendente || arrastando) return;
     const t = window.setTimeout(() => definirEstado("escondida"), cfg.esconderSeg * 1000);
     return () => window.clearTimeout(t);
-  }, [cfg.modo, cfg.esconderSeg, estadoEfetivo, sobre, barraEmUso, revelacao, frescos, pomodoro.rodando, definirEstado, atualizacao.fase, pedidoPendente]);
+  }, [cfg.modo, cfg.esconderSeg, estadoEfetivo, sobre, barraEmUso, revelacao, frescos, pomodoro.rodando, definirEstado, atualizacao.fase, pedidoPendente, arrastando]);
 
   useEffect(() => {
     if (estado === "expandida" && abaAtual === "avisos") useAgentes.getState().marcarVistos();
@@ -396,6 +407,45 @@ export function Ilha() {
   const crescendo = alvo.w * alvo.h >= anterior.current.w * anterior.current.h;
   anterior.current = { w: alvo.w, h: alvo.h };
   const transicao = crescendo ? MOLA : FECHAR;
+
+  const tamanhoNaTela = { largura: alvo.w * escala, altura: alvo.h * escala, repouso: ALTURA_COMPACTA * escala };
+  const ancora = ancoraDaIlha(arrasto ? posicaoDoArrasto(arrasto.centro, arrasto.topo, tela) : cfg.posicao, tela, tamanhoNaTela);
+  const movimentoDeVisibilidade = movimentoDaVisibilidade(oculta, Boolean(reduzirAnimacoes), ancora.topo < tela.altura / 2);
+
+  const iniciarArrasto = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    arrastouAgora.current = false;
+    gesto.current = { id: e.pointerId, x: e.clientX, y: e.clientY, centro: ancora.centro, topo: ancora.topo, moveu: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const seguirArrasto = (e: React.PointerEvent<HTMLDivElement>) => {
+    const g = gesto.current;
+    if (!g || g.id !== e.pointerId) return;
+    const dx = e.clientX - g.x;
+    const dy = e.clientY - g.y;
+    if (!g.moveu) {
+      if (Math.hypot(dx, dy) < LIMIAR_DO_ARRASTO) return;
+      g.moveu = true;
+      window.clearTimeout(relogioHover.current);
+      setArrastando(true);
+    }
+    setArrasto({ centro: g.centro + dx, topo: g.topo + dy });
+  };
+
+  const terminarArrasto = (e: React.PointerEvent<HTMLDivElement>, cancelar = false) => {
+    const g = gesto.current;
+    if (!g || g.id !== e.pointerId) return;
+    gesto.current = null;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    setArrastando(false);
+    setArrasto(null);
+    if (!g.moveu) return;
+    arrastouAgora.current = true;
+    if (cancelar) return;
+    definirIlha({ posicao: posicaoDoArrasto(ancora.centro, ancora.topo, tela) });
+    void tocarSom("blip");
+  };
 
   const VisaoAtual = abaAtual === "conexoes" ? null : VISAO_ABA[abaAtual];
   const agenteLateral: AgenteId = abaAtual === "avisos" && alertas[0] ? alertas[0].agenteId : AGENTE_DA_ABA[abaAtual] ?? (trabalhando[0] as AgenteId | undefined) ?? agenteDaVez;
@@ -539,14 +589,17 @@ export function Ilha() {
           visivel={barraVisivel}
           escala={escala}
           larguraDaIlha={alvo.w * escala}
+          centroDaIlha={ancora.colada ? ancora.centro : null}
           aparencia={aparencia}
           aoAbrirAba={(a, secao) => alternarAbaDaBarra(abas.includes(a) ? a : abas[0] ?? "hoje", secao)}
           aoUsar={setBarraEmUso}
         />
       )}
+      {arrastando && <div className="ilha-capa-arrasto" aria-hidden="true" />}
       {estadoEfetivo === "escondida" && (
         <div
           className="ilha-gatilho"
+          style={{ left: ancora.centro, top: ancora.topo }}
           onDragEnter={(e) => {
             if (!Array.from(e.dataTransfer.types).includes("Files")) return;
             setRevelada(true);
@@ -561,7 +614,8 @@ export function Ilha() {
       )}
       <motion.div
         ref={raiz}
-        className={`ilha-raiz${oculta ? " ilha-raiz-oculta" : ""}`}
+        className={`ilha-raiz${oculta ? " ilha-raiz-oculta" : ""}${ancora.colada ? "" : " ilha-raiz-solta"}`}
+        data-arrastando={arrastando ? "true" : undefined}
         data-privacidade={privacidade ? "sim" : "nao"}
         {...atributosDoFundo(aparencia)}
         initial={false}
@@ -569,9 +623,12 @@ export function Ilha() {
         transition={movimentoDeVisibilidade.transition}
         style={{
           ...variaveisDaBorda(aparencia),
+          left: ancora.centro,
+          top: ancora.acima ? "auto" : ancora.topo,
+          bottom: ancora.acima ? ancora.rodape : "auto",
           x: "-50%",
           scale: escala,
-          transformOrigin: "top center",
+          transformOrigin: ancora.acima ? "bottom center" : "top center",
           pointerEvents: oculta ? "none" : "auto",
           ["--topo-orelhas" as string]: `${barraVisivel ? ALTURA_DA_FAIXA : 0}px`,
           ["--raio-orelha" as string]: barraVisivel ? "10px" : "14px",
@@ -599,7 +656,7 @@ export function Ilha() {
           className="ilha"
           style={{ ["--fundo-ilha" as string]: aparencia.fundo }}
           initial={false}
-          animate={{ width: alvo.w, height: alvo.h, borderBottomLeftRadius: alvo.r, borderBottomRightRadius: alvo.r }}
+          animate={{ width: alvo.w, height: alvo.h, borderBottomLeftRadius: alvo.r, borderBottomRightRadius: alvo.r, borderTopLeftRadius: ancora.colada ? 0 : alvo.r, borderTopRightRadius: ancora.colada ? 0 : alvo.r }}
           transition={transicao}
         >
           <AnimatePresence>
@@ -618,14 +675,28 @@ export function Ilha() {
                   key={`c-${compacta.tipo}`}
                   className="ilha-compacta"
                   data-tipo={compacta.tipo}
+                  data-arrastavel="true"
                   role="button"
                   tabIndex={0}
-                  aria-label={T.ilha.expandir}
+                  aria-label={`${T.ilha.expandir}. ${T.ilha.arrastar}`}
                   initial={{ opacity: 0, filter: "blur(8px)", scale: 0.97 }}
                   animate={{ opacity: 1, filter: "blur(0px)", scale: 1, transition: { delay: 0.16, duration: 0.3 } }}
                   exit={{ opacity: 0, filter: "blur(8px)", scale: 0.97, transition: { duration: 0.16 } }}
-                  onClick={acionarCompacta}
+                  onClick={() => {
+                    if (arrastouAgora.current) {
+                      arrastouAgora.current = false;
+                      return;
+                    }
+                    acionarCompacta();
+                  }}
                   onKeyDown={(e) => {
+                    const passo = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+                    if (passo) {
+                      e.preventDefault();
+                      const px = e.shiftKey ? 32 : 12;
+                      definirIlha({ posicao: posicaoDoArrasto(ancora.centro + passo[0] * px, ancora.topo + passo[1] * px, tela) });
+                      return;
+                    }
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       acionarCompacta();
@@ -633,9 +704,14 @@ export function Ilha() {
                   }}
                   onPointerEnter={() => {
                     window.clearTimeout(relogioHover.current);
-                    if (cfg.abrirHover && compacta.tipo !== "atualizacao") relogioHover.current = window.setTimeout(() => useIlha.getState().estado === "compacta" && abrir(abaDaCompacta()), 280);
+                    if (cfg.abrirHover && !arrastando && compacta.tipo !== "atualizacao") relogioHover.current = window.setTimeout(() => useIlha.getState().estado === "compacta" && abrir(abaDaCompacta()), 280);
                   }}
                   onPointerLeave={() => window.clearTimeout(relogioHover.current)}
+                  onPointerDown={iniciarArrasto}
+                  onPointerMove={seguirArrasto}
+                  onPointerUp={terminarArrasto}
+                  onPointerCancel={(e) => terminarArrasto(e, true)}
+                  onLostPointerCapture={(e) => terminarArrasto(e, true)}
                 >
                   {["pomodoro", "relogio", "nada"].includes(compacta.tipo) && (
                     <div className="ilha-compacta-lado">

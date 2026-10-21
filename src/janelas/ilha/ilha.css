@@ -25,6 +25,7 @@
 }
 
 .ilha-gatilho {
+  /* O componente reposiciona por estilo em linha quando a ilha está solta. */
   position: fixed;
   top: 0;
   left: 50%;
@@ -32,6 +33,33 @@
   width: 240px;
   height: 6px;
   z-index: 1001;
+}
+
+/* Ilha solta do topo: vira pílula flutuante, sem as orelhas que emendam na borda. */
+.ilha-raiz-solta .ilha::before,
+.ilha-raiz-solta .ilha::after {
+  display: none;
+}
+
+.ilha-raiz-solta .ilha {
+  box-shadow: var(--sombra-janela);
+}
+
+.ilha-compacta[data-arrastavel="true"] {
+  cursor: grab;
+}
+
+.ilha-raiz[data-arrastando="true"] .ilha-compacta,
+.ilha-raiz[data-arrastando="true"] .ilha-compacta * {
+  cursor: grabbing;
+}
+
+/* Só existe durante o arrasto, para a janela sobreposta não devolver o cursor ao sistema no meio do gesto. */
+.ilha-capa-arrasto {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
 }
 
 .ilha {

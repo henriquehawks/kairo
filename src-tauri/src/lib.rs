@@ -18,7 +18,6 @@ mod salvamento;
 use plataforma::{barra, janela_frente, miniaturas};
 
 const PORTA: u16 = 47831;
-const ALTURA_ILHA: f64 = 720.0;
 const ALTURA_DOCK: f64 = 400.0;
 
 #[derive(Deserialize, Clone, Copy)]
@@ -504,12 +503,12 @@ pub fn run() {
                 }
                 None => (0.0, 0.0, 1920.0, 1040.0),
             };
-            let (tela_x, tela_y, tela_largura) = match &monitor {
+            let (tela_x, tela_y, tela_largura, tela_altura) = match &monitor {
                 Some(m) => {
                     let escala = m.scale_factor();
-                    (m.position().x as f64 / escala, m.position().y as f64 / escala, m.size().width as f64 / escala)
+                    (m.position().x as f64 / escala, m.position().y as f64 / escala, m.size().width as f64 / escala, m.size().height as f64 / escala)
                 }
-                None => (mx, my, mw),
+                None => (mx, my, mw, mh),
             };
 
             let sistema = WebviewWindowBuilder::new(app, "sistema", WebviewUrl::App("index.html".into()))
@@ -541,7 +540,7 @@ pub fn run() {
                 }
             });
 
-            criar_sobreposta(&handle, "ilha", tela_y, tela_x, tela_largura, ALTURA_ILHA)?;
+            criar_sobreposta(&handle, "ilha", tela_y, tela_x, tela_largura, tela_altura)?;
             criar_sobreposta(&handle, "dock", my + mh - ALTURA_DOCK, mx, mw, ALTURA_DOCK)?;
             criar_sobreposta(&handle, "assistive", my, mx, mw, mh)?;
             for rotulo in ["ilha", "dock", "assistive"] {

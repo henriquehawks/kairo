@@ -6,7 +6,7 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, Monitor, PhysicalPosition, PhysicalSize, WebviewWindow};
 
 use crate::plataforma::{self, barra, RECT};
-use crate::{criar_sobreposta, Estado, ALTURA_DOCK, ALTURA_ILHA};
+use crate::{criar_sobreposta, Estado, ALTURA_DOCK};
 
 pub const ROTULO_PRINCIPAL: &str = "dock";
 const ESCOLHA_TODOS: &str = "todos";
@@ -111,10 +111,9 @@ pub fn posicionar_ilha(app: &AppHandle) {
     }
     let infos: Vec<MonitorDoNiko> = monitores.iter().map(|(_, i)| i.clone()).collect();
     let (monitor, _) = monitores.swap_remove(monitor_da_ilha(&escolha, &infos));
-    let altura = (ALTURA_ILHA * monitor.scale_factor()).round() as u32;
     let destino = *monitor.position();
     let _ = janela.set_position(destino);
-    let _ = janela.set_size(PhysicalSize::new(monitor.size().width, altura));
+    let _ = janela.set_size(*monitor.size());
     let _ = janela.set_position(destino);
 }
 

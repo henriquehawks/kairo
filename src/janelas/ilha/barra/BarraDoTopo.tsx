@@ -33,6 +33,8 @@ interface PropsBarra {
   visivel: boolean;
   escala: number;
   larguraDaIlha: number;
+  /** Centro horizontal da ilha, em px, ou null quando ela está solta e a faixa não precisa de recorte. */
+  centroDaIlha: number | null;
   aparencia: AparenciaDeBorda;
   aoAbrirAba: (aba: AbaIlha, secao?: SecaoHoje) => void;
   aoUsar: (emUso: boolean) => void;
@@ -160,7 +162,19 @@ function LadoDireito({ pop, alternarPainel, alternarBandeja }: { pop: Pop; alter
   );
 }
 
-export function BarraDoTopo({ visivel, escala, larguraDaIlha, aparencia, aoAbrirAba, aoUsar }: PropsBarra) {
+/**
+ * Abre na faixa do topo o vão onde a ilha encaixa. Com a ilha solta do topo
+ * (centro nulo) a faixa fica inteira, sem buraco no meio do nada.
+ */
+export function recorteDaFaixa(centro: number | null, larguraDaIlha: number): string | undefined {
+  if (centro === null) return undefined;
+  const meia = Math.max(0, larguraDaIlha / 2 - 1);
+  const esquerda = centro - meia;
+  const direita = centro + meia;
+  return `linear-gradient(to right, #000 ${esquerda}px, transparent ${esquerda}px, transparent ${direita}px, #000 ${direita}px)`;
+}
+
+export function BarraDoTopo({ visivel, escala, larguraDaIlha, centroDaIlha, aparencia, aoAbrirAba, aoUsar }: PropsBarra) {
   const [pop, setPop] = useState<Pop>(null);
   const [sobre, setSobre] = useState(false);
   const playerAberto = useIlha((s) => s.estado === "expandida" && s.aba === "midia");
@@ -222,8 +236,7 @@ export function BarraDoTopo({ visivel, escala, larguraDaIlha, aparencia, aoAbrir
 
   const altura = ALTURA_DA_ABA * escala;
   const topoDosPops = altura + MARGEM_DOS_POPS;
-  const meiaIlha = Math.max(0, larguraDaIlha / 2 - 1);
-  const recorteDaIlha = `linear-gradient(to right, #000 calc(50% - ${meiaIlha}px), transparent calc(50% - ${meiaIlha}px), transparent calc(50% + ${meiaIlha}px), #000 calc(50% + ${meiaIlha}px))`;
+  const recorteDaIlha = recorteDaFaixa(centroDaIlha, larguraDaIlha);
   const variaveis = variaveisDaBorda(aparencia);
   const aoEntrar = () => setSobre(true);
   const aoSair = () => setSobre(false);

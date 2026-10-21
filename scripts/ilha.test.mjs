@@ -13,6 +13,79 @@ const { useIlha } = await servidor.ssrLoadModule("/src/estado/ilha.ts");
 const { atrasoDeFechamento, editandoNaIlha } = await servidor.ssrLoadModule("/src/janelas/ilha/fechamento.ts");
 const { controle, sistema } = await servidor.ssrLoadModule("/src/ponte/ponteLocal.ts");
 const { areaDeTrabalhoNaFrente, focoDaAreaPeloElemento, mostrarLateraisDaIlha } = await servidor.ssrLoadModule("/src/janelas/ilha/barra/visibilidadeDaBarra.ts");
+const { COLADA_ATE, MARGEM, POSICAO_PADRAO, ancoraDaIlha, noTopo, posicaoDoArrasto, posicaoValida } = await servidor.ssrLoadModule("/src/janelas/ilha/posicao.ts");
+
+const TELA = { largura: 1920, altura: 1080 };
+const FECHADA = { largura: 190, altura: 30, repouso: 30 };
+const EXPANDIDA = { largura: 660, altura: 430, repouso: 30 };
+
+test("sem ter sido arrastada, a ilha fica colada no topo e centralizada como sempre foi", () => {
+  assert.deepEqual(POSICAO_PADRAO, { x: 0.5, y: 0 });
+  assert.equal(noTopo(POSICAO_PADRAO), true);
+  for (const ilha of [FECHADA, EXPANDIDA]) {
+    const ancora = ancoraDaIlha(POSICAO_PADRAO, TELA, ilha);
+    assert.equal(ancora.centro, TELA.largura / 2);
+    assert.equal(ancora.topo, 0);
+    assert.equal(ancora.colada, true);
+    assert.equal(ancora.acima, false);
+  }
+});
+
+test("arrastada, a ilha não passa das bordas nem perde a folga", () => {
+  const direita = ancoraDaIlha({ x: 1, y: 0.5 }, TELA, EXPANDIDA);
+  assert.equal(direita.centro, TELA.largura - EXPANDIDA.largura / 2 - MARGEM);
+  const esquerda = ancoraDaIlha({ x: 0, y: 0.5 }, TELA, EXPANDIDA);
+  assert.equal(esquerda.centro, EXPANDIDA.largura / 2 + MARGEM);
+  const fundo = ancoraDaIlha({ x: 0.5, y: 1 }, TELA, FECHADA);
+  assert.equal(fundo.topo, TELA.altura - FECHADA.repouso - MARGEM);
+  assert.ok(fundo.rodape >= MARGEM);
+  const maiorQueATela = ancoraDaIlha({ x: 0.5, y: 0.5 }, { largura: 400, altura: 300 }, EXPANDIDA);
+  assert.ok(Number.isFinite(maiorQueATela.centro) && Number.isFinite(maiorQueATela.topo));
+});
+
+test("perto da borda de cima a ilha volta a ser entalhe, e longe dela fica solta", () => {
+  assert.equal(ancoraDaIlha({ x: 0.2, y: COLADA_ATE / TELA.altura }, TELA, FECHADA).colada, true);
+  assert.equal(ancoraDaIlha({ x: 0.2, y: COLADA_ATE / TELA.altura }, TELA, FECHADA).topo, 0);
+  const solta = ancoraDaIlha({ x: 0.2, y: 0.4 }, TELA, FECHADA);
+  assert.equal(solta.colada, false);
+  assert.equal(solta.topo, Math.round(0.4 * TELA.altura));
+  assert.equal(posicaoDoArrasto(960, COLADA_ATE, TELA).y, 0);
+  assert.ok(posicaoDoArrasto(960, COLADA_ATE + 1, TELA).y > 0);
+});
+
+test("na metade de baixo a ilha abre para cima, mantendo o rodapé onde a fechada estava", () => {
+  const fechada = ancoraDaIlha({ x: 0.5, y: 0.9 }, TELA, FECHADA);
+  const expandida = ancoraDaIlha({ x: 0.5, y: 0.9 }, TELA, EXPANDIDA);
+  assert.equal(fechada.acima, false);
+  assert.equal(expandida.acima, true);
+  assert.equal(expandida.rodape, fechada.rodape);
+  assert.equal(expandida.topo, fechada.topo + FECHADA.repouso - EXPANDIDA.altura);
+  assert.equal(ancoraDaIlha({ x: 0.5, y: 0 }, TELA, EXPANDIDA).acima, false);
+});
+
+test("o arrasto volta a virar fração e a posição salva recusa lixo", () => {
+  assert.deepEqual(posicaoDoArrasto(480, 540, TELA), { x: 0.25, y: 0.5 });
+  assert.deepEqual(posicaoDoArrasto(-900, 9000, TELA), { x: 0, y: 1 });
+  assert.deepEqual(posicaoDoArrasto(100, 100, { largura: 0, altura: 0 }), POSICAO_PADRAO);
+  for (const ruim of [null, undefined, "topo", 7, { x: "a", y: {} }, { x: NaN, y: Infinity }])
+    assert.deepEqual(posicaoValida(ruim), POSICAO_PADRAO);
+  assert.deepEqual(posicaoValida({ x: 2, y: -3 }), { x: 1, y: 0 });
+  assert.deepEqual(posicaoValida({ x: 0.3 }), { x: 0.3, y: POSICAO_PADRAO.y });
+  assert.equal(noTopo({ x: 0.5, y: 0.01 }), false);
+});
+
+test("configuração salva com posição inválida é consertada sem derrubar o resto", async () => {
+  const { configuracoesValidas } = await servidor.ssrLoadModule("/src/utilitarios/configuracoesValidas.ts");
+  const { CONFIG_PADRAO } = await servidor.ssrLoadModule("/src/estado/configuracoes.ts");
+  // O que não é número volta ao padrão; número fora da faixa é apertado, como em validarAssistive.
+  const limpa = configuracoesValidas({ ilha: { ...CONFIG_PADRAO.ilha, posicao: { x: "esquerda", y: null } } }, CONFIG_PADRAO);
+  assert.deepEqual(limpa.ilha.posicao, POSICAO_PADRAO);
+  const apertada = configuracoesValidas({ ilha: { ...CONFIG_PADRAO.ilha, posicao: { x: -2, y: 40 } } }, CONFIG_PADRAO);
+  assert.deepEqual(apertada.ilha.posicao, { x: 0, y: 1 });
+  const guardada = configuracoesValidas({ ilha: { ...CONFIG_PADRAO.ilha, posicao: { x: 0.12, y: 0.77 } } }, CONFIG_PADRAO);
+  assert.deepEqual(guardada.ilha.posicao, { x: 0.12, y: 0.77 });
+});
+
 
 test("fechamento permite sair imediatamente ou esperar menos de cinco segundos, preservando Nunca", () => {
   assert.equal(atrasoDeFechamento(0, "hoje"), null);
@@ -105,19 +178,34 @@ test("a ilha coberta desaparece gradualmente e retorna sem atraso ou deslocament
   assert.deepEqual(movimentoDaVisibilidade(true, false), saida);
 });
 
+test("a faixa do topo abre o vão onde a ilha está, e fica inteira com a ilha solta", async () => {
+  const { recorteDaFaixa } = await servidor.ssrLoadModule("/src/janelas/ilha/barra/BarraDoTopo.tsx");
+  assert.equal(recorteDaFaixa(null, 660), undefined);
+  const centrado = recorteDaFaixa(960, 660);
+  assert.ok(centrado.includes("#000 631px"), centrado);
+  assert.ok(centrado.includes("transparent 1289px"), centrado);
+  const aEsquerda = recorteDaFaixa(300, 200);
+  assert.ok(aEsquerda.includes("#000 201px") && aEsquerda.includes("transparent 399px"), aEsquerda);
+  assert.ok(recorteDaFaixa(300, 0).includes("#000 300px"));
+});
+
 test("movimento reduzido mantém a saída com fade curto, sem deslocar a ilha", async () => {
   const { movimentoDaVisibilidade } = await servidor.ssrLoadModule("/src/janelas/ilha/animacoes/visibilidade.ts");
   const saida = movimentoDaVisibilidade(true, true);
   assert.deepEqual(saida.animate, { opacity: 0, y: 0 });
   assert.ok(saida.transition.duration > 0 && saida.transition.duration <= 0.12);
   assert.deepEqual(movimentoDaVisibilidade(false, true).animate, { opacity: 1, y: 0 });
+  // Escondendo, a ilha recua para a borda mais perto: para cima no topo, para baixo quando está embaixo.
+  assert.deepEqual(movimentoDaVisibilidade(true, false, true).animate, { opacity: 0, y: -12 });
+  assert.deepEqual(movimentoDaVisibilidade(true, false, false).animate, { opacity: 0, y: 12 });
+  assert.deepEqual(movimentoDaVisibilidade(true, true, false).animate, { opacity: 0, y: 0 });
 });
 
 test("a ilha integra a saída animada sem zerar sua opacidade diretamente no estilo", () => {
   const fonte = readFileSync(new URL("../src/janelas/ilha/Ilha.tsx", import.meta.url), "utf8");
   assert.ok(!fonte.includes('opacity: coberta && estadoEfetivo === "escondida" ? 0 : 1'));
   assert.match(fonte, /<motion\.div\s+ref=\{raiz\}/);
-  assert.match(fonte, /movimentoDaVisibilidade\(oculta, Boolean\(reduzirAnimacoes\)\)/);
+  assert.match(fonte, /movimentoDaVisibilidade\(oculta, Boolean\(reduzirAnimacoes\), /);
   assert.match(fonte, /ilha-raiz-oculta/);
 });
 
