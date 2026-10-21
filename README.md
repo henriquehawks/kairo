@@ -333,49 +333,48 @@ pnpm chat:testar # testes do chat com provedor falso, sem rede ou banco real
 pnpm midia:testar # testes de mídia pausada e consultas fora de ordem
 pnpm app         # gera o instalador do Windows
 pnpm versao      # sincroniza o número da versão nos arquivos, sem buildar
+pnpm notas       # rascunha as notas da versão a partir dos commits
+pnpm publicar    # confere, sincroniza, commita e cria a tag que publica a release
 ```
 
 ### Publicar uma nova versão
 
-Empurrar a tag publica a release sozinho. Commitar não publica nada: o workflow [Publicar versão](.github/workflows/publicar.yml) só roda com uma tag `v*` ou pelo botão Run workflow no GitHub. Tomando a 0.2.7 como exemplo:
+Empurrar a tag publica a release sozinho. Commitar não publica nada: o workflow [Publicar versão](.github/workflows/publicar.yml) só roda com uma tag `v*` ou pelo botão Run workflow no GitHub. São dois comandos, com a 0.2.8 de exemplo:
 
-**1. Escreva as notas da versão** em `docs/releases/0.2.7.md`, em português e voltadas a quem usa o app, com as seções Novidades, Correções e Antes de instalar. O arquivo é obrigatório: o workflow para antes de buildar se ele faltar, porque é o texto da descrição da release.
+```powershell
+pnpm notas 0.2.8       # rascunho das notas a partir dos commits desde a última tag
+# reescreva os textos pensando em quem usa o app
+pnpm publicar 0.2.8    # confere, sincroniza, commita, empurra e cria a tag
+```
 
-**2. Repita as mudanças em `src/textos/textos.ts`**, no começo do array `historico`, com `versao`, `data` e a lista de `mudancas` (`novo`, `melhoria` ou `correcao`). É o que aparece na página Novidades do app.
+**`pnpm notas 0.2.8`** lê os commits desde a última tag, separa `feat:`, `fix:` e `perf:` em Novidades, Correções e Melhorias, e escreve os dois lugares de uma vez: o arquivo `docs/releases/0.2.8.md` e a entrada do histórico em `src/textos/textos.ts`, que vira a página Novidades dentro do app. O texto sai cru, com o assunto de cada commit — reescreva as duas cópias com as frases que o usuário vai ler. Use `--refazer` para sobrescrever um rascunho já existente.
 
-**3. Confira antes de soltar:**
+**`pnpm publicar 0.2.8`** só vai até o fim se tudo estiver no lugar. Ele recusa publicar fora da `main`, com arquivos não commitados que não sejam os da própria versão, sem as notas, com trechos de rascunho (`<...>`) ainda no texto, sem a entrada no histórico do app, ou se a tag já existir aqui ou no GitHub. Passando nas checagens, roda `pnpm verificar` e `pnpm test`, sincroniza a versão nos quatro arquivos e no selo deste README, cria o commit `chore: versão 0.2.8`, empurra a `main`, cria a tag `v0.2.8` e empurra a tag — que é o que dispara o workflow. No fim imprime o link do Actions.
+
+- `pnpm publicar 0.2.8 --ensaio` faz todas as checagens e mostra o que faria, sem alterar nem empurrar nada.
+- `pnpm publicar 0.2.8 --sem-testes` pula tipos e testes, para quando você acabou de rodá-los.
+
+O job do Windows roda tipos, testes e o build assinado, e cria a release com o `.exe`, o `.msi` e o `latest.json`. Em seguida, o job do Linux anexa o `.deb`, o `.rpm` e o AppImage na mesma release. São ~25 minutos no total. Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
+
+#### Fazendo na mão
+
+Os mesmos passos, se precisar de controle fino:
 
 ```powershell
 pnpm verificar
 pnpm test
-```
-
-**4. Suba o número da versão:**
-
-```powershell
-pnpm versao 0.2.7
-```
-
-Ele grava a versão em `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` e no selo deste README — os cinco de uma vez ou nenhum. Recusa versão menor que a atual, avisa se faltarem as notas e não builda nada.
-
-**5. Commite e publique:**
-
-```powershell
-git commit -am "chore: versão 0.2.7"
+pnpm versao 0.2.8                  # grava a versão nos quatro arquivos e no selo do README
+git commit -am "chore: versão 0.2.8"
 git push origin main
-git tag v0.2.7 ; git push origin v0.2.7
+git tag v0.2.8 ; git push origin v0.2.8
 ```
 
-A tag precisa ser `v` seguido da mesma versão dos arquivos, senão o workflow para.
-
-**6. Acompanhe (~25 min).** O job do Windows roda tipos, testes e o build assinado, e cria a release com o `.exe`, o `.msi` e o `latest.json`. Em seguida, o job do Linux anexa o `.deb`, o `.rpm` e o AppImage na mesma release. Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
-
-Para repetir a mesma versão depois de um erro, apague a release e a tag antes — há uma trava contra release duplicada:
+A tag precisa ser `v` seguido da mesma versão dos arquivos, senão o workflow para. Para repetir a mesma versão depois de um erro, apague antes a release e a tag — há uma trava contra release duplicada:
 
 ```powershell
-gh release delete v0.2.7 --repo henriquehawks/kairo --yes
-git push origin :v0.2.7
-git tag -d v0.2.7
+gh release delete v0.2.8 --repo henriquehawks/kairo --yes
+git push origin :v0.2.8
+git tag -d v0.2.8
 ```
 
 #### Buildar e assinar no seu computador
