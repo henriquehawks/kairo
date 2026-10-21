@@ -349,10 +349,22 @@ pnpm publicar 0.2.8    # confere, sincroniza, commita, empurra e cria a tag
 
 **`pnpm notas 0.2.8`** lê os commits desde a última tag, separa `feat:`, `fix:` e `perf:` em Novidades, Correções e Melhorias, e escreve os dois lugares de uma vez: o arquivo `docs/releases/0.2.8.md` e a entrada do histórico em `src/textos/textos.ts`, que vira a página Novidades dentro do app. O texto sai cru, com o assunto de cada commit — reescreva as duas cópias com as frases que o usuário vai ler. Use `--refazer` para sobrescrever um rascunho já existente.
 
-**`pnpm publicar 0.2.8`** só vai até o fim se tudo estiver no lugar. Ele recusa publicar fora da `main`, com arquivos não commitados que não sejam os da própria versão, sem as notas, com trechos de rascunho (`<...>`) ainda no texto, sem a entrada no histórico do app, ou se a tag já existir aqui ou no GitHub. Passando nas checagens, roda `pnpm verificar` e `pnpm test`, sincroniza a versão nos quatro arquivos e no selo deste README, cria o commit `chore: versão 0.2.8`, empurra a `main`, cria a tag `v0.2.8` e empurra a tag — que é o que dispara o workflow. No fim imprime o link do Actions.
+**`pnpm publicar 0.2.8`** só vai até o fim se tudo estiver no lugar. Antes de tocar em qualquer arquivo, ele recusa quando:
+
+- você não está na `main`;
+- existe arquivo modificado que não seja da própria versão (as notas, o `textos.ts` e os arquivos de versão são os únicos aceitos — o resto você commita antes);
+- faltam as notas em `docs/releases/0.2.8.md`, elas têm menos de 200 caracteres, ou não começam com `# Kairo 0.2.8`;
+- sobrou trecho de rascunho entre `<` e `>` no texto, em qualquer um dos dois arquivos;
+- falta a entrada da versão no histórico de `src/textos/textos.ts`;
+- a tag `v0.2.8` já existe aqui ou no GitHub, ou a release já foi publicada;
+- a versão é menor que a atual.
+
+Passando nas checagens, ele roda `pnpm verificar` e `pnpm test`, sincroniza a versão nos quatro arquivos e no selo deste README, cria o commit `chore: versão 0.2.8`, empurra a `main`, cria a tag `v0.2.8` e empurra a tag — que é o que dispara o workflow. No fim imprime o link do Actions.
 
 - `pnpm publicar 0.2.8 --ensaio` faz todas as checagens e mostra o que faria, sem alterar nem empurrar nada.
 - `pnpm publicar 0.2.8 --sem-testes` pula tipos e testes, para quando você acabou de rodá-los.
+
+Um teste em `scripts/interface.test.mjs` cobre a mesma regra pelo lado de dentro: a versão de `package.json` precisa ter notas em `docs/releases/`, com o título certo, e ser a primeira entrada do histórico, com data no formato `AAAA-MM-DD` e tipos conhecidos (`novo`, `melhoria`, `correcao`). Assim o esquecimento aparece no `pnpm test`, e não no workflow depois do push — onde consertar custa apagar a tag e a release.
 
 O job do Windows roda tipos, testes e o build assinado, e cria a release com o `.exe`, o `.msi` e o `latest.json`. Em seguida, o job do Linux anexa o `.deb`, o `.rpm` e o AppImage na mesma release. São ~25 minutos no total. Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
 
