@@ -366,7 +366,11 @@ Passando nas checagens, ele roda `pnpm verificar` e `pnpm test`, sincroniza a ve
 
 Um teste em `scripts/interface.test.mjs` cobre a mesma regra pelo lado de dentro: a versão de `package.json` precisa ter notas em `docs/releases/`, com o título certo, e ser a primeira entrada do histórico, com data no formato `AAAA-MM-DD` e tipos conhecidos (`novo`, `melhoria`, `correcao`). Assim o esquecimento aparece no `pnpm test`, e não no workflow depois do push — onde consertar custa apagar a tag e a release.
 
-O job do Windows roda tipos, testes e o build assinado, e cria a release com o `.exe`, o `.msi` e o `latest.json`. Em seguida, o job do Linux anexa o `.deb`, o `.rpm` e o AppImage na mesma release. São ~25 minutos no total. Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
+Os dois buildes rodam **ao mesmo tempo**: o do Windows gera o `.exe`, o `.msi` e o `latest.json` assinados, o do Linux gera o `.deb`, o `.rpm` e o AppImage, cada um guardando os arquivos como artefato. Só então o último job cria a release com os seis de uma vez. São ~13 minutos no total.
+
+Isso é tudo ou nada: se qualquer um dos dois buildes falhar, release nenhuma é criada, e você corrige e empurra a tag de novo (apagando a anterior). O build do Windows roda só a checagem de tipos, porque os testes já passaram no `pnpm publicar` e no workflow Verificar do push.
+
+Quem já tem o Kairo recebe a atualização sozinho a partir daí, porque o app lê o `latest.json`.
 
 #### Fazendo na mão
 

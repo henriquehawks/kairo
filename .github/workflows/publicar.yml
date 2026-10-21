@@ -1,9 +1,9 @@
 name: Publicar versão
 
-# Empurre a tag (git tag v0.2.6 && git push origin v0.2.6) e este workflow faz o
-# resto: confere, builda os instaladores do Windows assinados com a chave de
-# atualização, cria a release com os três arquivos e chama o workflow dos
-# pacotes Linux para anexar .deb, .rpm e AppImage na mesma release.
+# Empurre a tag (git tag v0.2.8 && git push origin v0.2.8) e este workflow faz o
+# resto. Windows e Linux buildam ao mesmo tempo, cada um guardando os arquivos
+# como artefato, e o último job cria a release com os seis de uma vez — por isso
+# nada é publicado se qualquer um dos dois buildes falhar.
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       versao:
-        description: "Versão sem o v, por exemplo 0.2.6"
+        description: "Versão sem o v, por exemplo 0.2.8"
         required: true
         type: string
 
@@ -19,11 +19,13 @@ permissions:
   contents: write
 
 jobs:
-  windows:
-    name: Instaladores do Windows
-    runs-on: windows-latest
+  preparar:
+    name: Versão e notas
+    runs-on: ubuntu-latest
     outputs:
+      numero: ${{ steps.versao.outputs.numero }}
       tag: v${{ steps.versao.outputs.numero }}
+      notas: ${{ steps.versao.outputs.notas }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,6 +45,15 @@ jobs:
           echo "numero=$numero" >> "$GITHUB_OUTPUT"
           echo "notas=$notas" >> "$GITHUB_OUTPUT"
 
+  windows:
+    name: Instaladores do Windows
+    needs: preparar
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
       - uses: pnpm/action-setup@v4
         with:
           version: 11.20.0
@@ -54,11 +65,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Os testes não rodam aqui: pnpm publicar não deixa chegar na tag sem ter
+      # passado neles, e o workflow Verificar roda a suíte inteira a cada push.
       - name: Tipos
         run: pnpm verificar
-
-      - name: Testes
-        run: pnpm test
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -72,27 +82,50 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        run: pnpm lancar ${{ steps.versao.outputs.numero }} --notas-arquivo ${{ steps.versao.outputs.notas }}
+        run: pnpm lancar ${{ needs.preparar.outputs.numero }} --notas-arquivo ${{ needs.preparar.outputs.notas }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kairo-windows
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/latest.json
+          if-no-files-found: error
+
+  linux:
+    name: Pacotes Linux
+    needs: preparar
+    uses: ./.github/workflows/pacotes-linux.yml
+
+  publicar:
+    name: Criar a release
+    needs: [preparar, windows, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: pacotes
+          pattern: kairo-*
 
       - name: Publicar a release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          versao="${{ steps.versao.outputs.numero }}"
-          gh release create "v$versao" \
-            "src-tauri/target/release/bundle/nsis/Kairo_${versao}_x64-setup.exe" \
-            "src-tauri/target/release/bundle/msi/Kairo_${versao}_x64_pt-BR.msi" \
-            "src-tauri/target/release/bundle/nsis/latest.json" \
+          mapfile -t arquivos < <(find pacotes -type f | sort)
+          if [ "${#arquivos[@]}" -lt 6 ]; then
+            echo "Esperava os seis arquivos da release, vieram ${#arquivos[@]}:" >&2
+            printf '  %s\n' "${arquivos[@]}" >&2
+            exit 1
+          fi
+          printf 'Publicando:\n'
+          printf '  %s\n' "${arquivos[@]}"
+          gh release create "${{ needs.preparar.outputs.tag }}" "${arquivos[@]}" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Kairo $versao" \
-            --notes-file "${{ steps.versao.outputs.notas }}"
-
-  linux:
-    name: Pacotes Linux
-    needs: windows
-    permissions:
-      contents: write
-    uses: ./.github/workflows/pacotes-linux.yml
-    with:
-      tag: ${{ needs.windows.outputs.tag }}
+            --title "Kairo ${{ needs.preparar.outputs.numero }}" \
+            --notes-file "${{ needs.preparar.outputs.notas }}"

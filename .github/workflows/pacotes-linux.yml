@@ -3,11 +3,14 @@ name: Pacotes Linux
 on:
   release:
     types: [published]
+  # Chamado pelo workflow Publicar versão. Sem tag, só guarda o artefato e a
+  # release é criada pelo último job de lá; com tag, anexa direto na release.
   workflow_call:
     inputs:
       tag:
         description: "Tag da release onde anexar os pacotes"
-        required: true
+        required: false
+        default: ""
         type: string
   workflow_dispatch:
 
