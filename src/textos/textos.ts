@@ -175,6 +175,18 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.2.6",
+        data: "2026-10-20",
+        mudancas: [
+          ["novo", "A logo nova do Kairo, o K, aparece no ícone do app, no dock, na lateral da janela do sistema e na aba do navegador."],
+          ["novo", "Novo atalho global para tirar print com a ferramenta do sistema. Ele vem desligado; escolha a tecla em Ajustes, Atalhos (a tecla Print Screen funciona)."],
+          ["correcao", "Ao abrir, o Kairo travava: o dock sumia e a janela do sistema ficava como não respondendo. Agora o arranque não espera mais pela sincronização dos docks nem pelo trabalho da barra de tarefas, e as janelas aparecem em poucos segundos."],
+          ["correcao", "O próprio Kairo aparecia na bandeja da ilha, entre os apps em segundo plano."],
+          ["correcao", "Quando um app da bandeja não abre, o aviso diz o motivo. Apps que só reagem ao clique no próprio ícone, como o Lightshot, abriam uma cópia invisível; agora o Kairo encerra essa cópia e avisa que o app não tem janela para abrir."],
+          ["correcao", "As janelas do próprio Kairo apareciam na lista de janelas do dock e contavam como a janela da frente, o que atrapalhava o modo Inteligente. Elas voltaram a ser ignoradas, no Windows e no Linux."],
+        ],
+      },
+      {
         versao: "0.2.5",
         data: "2026-10-15",
         mudancas: [
