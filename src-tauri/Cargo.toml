@@ -1,6 +1,6 @@
 [package]
 name = "kairo"
-version = "0.2.9"
+version = "0.3.0"
 description = "Kairo"
 authors = ["henrique"]
 edition = "2021"

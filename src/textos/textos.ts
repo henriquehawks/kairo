@@ -175,6 +175,17 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.0",
+        data: "2026-10-21",
+        mudancas: [
+          ["novo", "A ilha agora se move: arraste a ilha fechada para qualquer ponto da tela. Um clique continua abrindo a ilha como sempre."],
+          ["novo", "Longe do topo ela vira uma pílula flutuante, com os quatro cantos arredondados e sombra. De volta para perto da borda de cima, encaixa no topo outra vez com o entalhe de sempre, e a barra do topo abre o vão no lugar novo dela."],
+          ["novo", "Na metade de baixo da tela, a ilha abre para cima, para o conteúdo não sair pela borda."],
+          ["novo", "Com a ilha fechada em foco, as setas do teclado ajustam a posição, e com Shift ela anda mais rápido."],
+          ["novo", "Em Configurações › Ilha, a linha Lugar na tela mostra onde ela está e traz o botão Voltar ao topo."],
+        ],
+      },
+      {
         versao: "0.2.9",
         data: "2026-10-21",
         mudancas: [
