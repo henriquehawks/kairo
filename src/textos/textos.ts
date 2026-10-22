@@ -179,6 +179,18 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.3",
+        data: "2026-10-21",
+        mudancas: [
+          ["novo", "Chegou a conta do Kairo: crie uma com e-mail e senha e seus dados acompanham você em qualquer computador onde entrar. É opcional — quem não criar continua com tudo guardado só aqui, como antes."],
+          ["novo", "Tudo é embaralhado no seu computador antes de sair. O servidor guarda, mas não consegue abrir nada — nem nós. Por isso o cadastro mostra um código de recuperação: guarde-o fora do computador, porque sem ele e sem a senha não há como voltar aos dados da conta."],
+          ["novo", "Se os dois lados tiverem dados, o Kairo para e pergunta qual vale, mostrando quantas áreas e quando cada um foi mexido — e guarda uma cópia do lado não escolhido antes de qualquer coisa."],
+          ["novo", "Chaves de IA e tokens das conexões não sincronizam, de propósito: ficam no cofre de senhas do seu sistema e precisam ser cadastrados em cada computador."],
+          ["correcao", "A sincronização quebrava ao encontrar certos dados antigos guardados pelo app."],
+          ["correcao", "Quando o cofre de senhas do sistema demorava a responder, a tela de conta ficava com erro em vez de simplesmente pedir login."],
+        ],
+      },
+      {
         versao: "0.3.2",
         data: "2026-10-21",
         mudancas: [
