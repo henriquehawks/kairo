@@ -4,7 +4,8 @@ A conta existe para uma coisa só: os dados da pessoa acompanharem ela quando tr
 de computador. Tudo é cifrado antes de sair da máquina — o servidor guarda, mas não
 consegue ler.
 
-Enquanto `CONTA_LIBERADA` (em `servidor/configuracaoDaConta.ts`) for `false`, as
+A conta está ligada desde a 0.3.3. `KAIRO_CONTA=0` desliga numa máquina só, sem
+precisar de versão nova — é a saída de emergência. Com ela desligada as
 rotas respondem `{ disponivel: false, emTestes: true }` e a seção some da interface,
 do mesmo jeito que o Google Workspace.
 

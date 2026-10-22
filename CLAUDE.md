@@ -106,12 +106,13 @@ As ferramentas que o modelo pode chamar estão em `src/utilitarios/ferramentasIa
 
 `servidor/claude.ts` e `servidor/agentesDeCodigo.ts` instalam ganchos nas configurações de Claude Code, Codex, Copilot CLI, OpenCode, Antigravity, Kimi, Gemini CLI e Amp (`FERRAMENTAS_DE_CODIGO`). Os ganchos são comandos `curl` que postam em `/ponte/agentes/evento/<ferramenta>` com um segredo próprio; o Kairo acompanha sessões, mostra alterações e responde pedidos de aprovação. A instalação edita arquivos do usuário (`~/.claude/settings.json` e equivalentes) marcando os blocos como gerados pelo Kairo (marcador literal `# niko:inicio`, mantido), para poder removê-los depois — mexa aí com cuidado e sempre pelos caminhos de `instalarAgente` / `removerAgente`.
 
-### Conta e sincronização (em testes)
+### Conta e sincronização
 
 Há uma conta opcional que leva os dados da pessoa de um computador para outro,
-cifrados de ponta a ponta. **Está desligada**: `CONTA_LIBERADA` em
-`servidor/configuracaoDaConta.ts` é `false` e as rotas `/ponte/conta/*` respondem
-`{ disponivel: false, emTestes: true }`, como o Google Workspace.
+cifrados de ponta a ponta. Ligada desde a 0.3.3. `CONTA_LIBERADA` em
+`servidor/configuracaoDaConta.ts` tem a saída de emergência: `KAIRO_CONTA=0` desliga
+numa máquina só, e aí as rotas `/ponte/conta/*` respondem `{ disponivel: false,
+emTestes: true }`, como o Google Workspace.
 
 O princípio do armazenamento local continua valendo: **a conta é opcional e o app
 funciona inteiro sem ela.** Quem nunca criar conta não é afetado em nada.

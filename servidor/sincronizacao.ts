@@ -53,10 +53,11 @@ const LIMITE_DO_VALOR = 20_000_000;
 export function conferirForma(chave: string, valor: string): string {
   if (!/^niko:[a-z0-9_-]{1,60}$/i.test(chave)) throw new Error("chave_invalida");
   if (valor.length > LIMITE_DO_VALOR) throw new Error("valor_grande");
-  const salvo: unknown = JSON.parse(valor);
-  if (typeof salvo !== "object" || salvo === null || Array.isArray(salvo)) throw new Error("valor_invalido");
-  const estado = (salvo as { state?: unknown }).state;
-  if (typeof estado !== "object" || estado === null || Array.isArray(estado)) throw new Error("valor_invalido");
+  // Nem toda chave guarda o envelope de um store: há marcas simples, como a data da
+  // limpeza dos exemplos, que são texto puro. Exigir JSON aqui recusaria dado legítimo.
+  // O que garante que isso veio da própria pessoa é a decifragem: só quem tem a chave
+  // mestra consegue produzir um pacote que abre. O sentido do conteúdo continua sendo
+  // conferido no merge de cada store, como já era com o disco.
   return valor;
 }
 

@@ -59,6 +59,10 @@ export async function responderConta(caminho: string, metodo: string, corpo: Rec
     return { status: 404, corpo: { erro: "rota_desconhecida" } };
   } catch (erro) {
     if (erro instanceof ErroDaConta) return { status: 400, corpo: { erro: erro.codigo } };
+    // A tela recebe um código curto, mas a causa precisa sobrar em algum lugar: sem
+    // isto, toda falha vira "falha_na_conta" e não há por onde começar a investigar.
+    process.stderr.write(`${new Date().toISOString()} conta ${caminho}: ${erro instanceof Error ? (erro.stack ?? erro.message) : String(erro)}
+`);
     // Erro do cofre vem como ErroDoCofre; qualquer outro vira falha genérica.
     const codigo = erro instanceof Error && /^[a-z_]{3,40}$/.test(erro.message) ? erro.message : "falha_na_conta";
     return { status: 400, corpo: { erro: codigo } };

@@ -53,7 +53,7 @@ async function guardarEntrada(deps: Dependencias, sessao: servidorDaConta.Sessao
 }
 
 export async function lerSessaoGuardada(deps: Dependencias): Promise<servidorDaConta.Sessao | null> {
-  const bruto = await deps.ler(ID_DA_SESSAO);
+  const bruto = await deps.ler(ID_DA_SESSAO).catch(() => null);
   if (!bruto) return null;
   try {
     const salvo: unknown = JSON.parse(bruto);
@@ -66,7 +66,7 @@ export async function lerSessaoGuardada(deps: Dependencias): Promise<servidorDaC
 }
 
 export async function lerChaveGuardada(deps: Dependencias): Promise<Buffer | null> {
-  const bruto = await deps.ler(ID_DA_CHAVE);
+  const bruto = await deps.ler(ID_DA_CHAVE).catch(() => null);
   if (!bruto) return null;
   const chave = Buffer.from(bruto, "base64");
   return chave.length === 32 ? chave : null;

@@ -20,15 +20,11 @@ export const CONTA: ConfiguracaoDaConta = {
  * Liga a conta. Desligada, as rotas respondem como a do Google Workspace: existem,
  * mas se declaram indisponíveis, e a seção some das Configurações.
  *
- * O padrão é desligada, e ligar exige a variável de ambiente KAIRO_CONTA=1. Isso é
- * de propósito: nenhum build de release pode sair com a conta ligada por descuido,
- * e ao mesmo tempo dá para testar numa máquina de verdade sem mexer no código.
+ * Ligada por padrão desde a 0.3.3. A variável continua existindo como saída de
+ * emergência: KAIRO_CONTA=0 desliga a conta numa máquina só, sem precisar de versão
+ * nova, caso alguém tenha problema e seja preciso tirá-la do caminho.
  *
- *   KAIRO_CONTA=1 pnpm dev
- *
- * No app instalado, a ponte herda o ambiente do processo pai, então basta definir a
+ * No app instalado a ponte herda o ambiente do processo pai, então basta definir a
  * variável no sistema antes de abrir o Kairo.
- *
- * Quando a conta estiver testada em duas máquinas, trocar o padrão para true.
  */
-export const CONTA_LIBERADA = process.env.KAIRO_CONTA === "1";
+export const CONTA_LIBERADA = process.env.KAIRO_CONTA !== "0";

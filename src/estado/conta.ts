@@ -66,6 +66,9 @@ export const useConta = create<EstadoDaLoja>()((set, get) => ({
   },
 
   sincronizar: async (escolha) => {
+    // Quem abre a tela pode chegar antes de qualquer gatilho ter rodado — no modo
+    // navegador não há gatilho nenhum. Sem isto o botão não faria nada, calado.
+    if (!get().carregado) await get().carregar();
     const atual = get();
     // Sem conta, com o cofre fechado ou já sincronizando, não há o que fazer.
     if (atual.sincronizando || !atual.disponivel || !atual.conectado || !atual.cofreAberto) return;

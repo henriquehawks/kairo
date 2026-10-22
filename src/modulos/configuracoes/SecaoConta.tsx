@@ -36,6 +36,8 @@ export function SecaoConta() {
   const recarregar = useCallback(async () => {
     try {
       const atual = await ponteDaConta.estado();
+      // A seção não depende de nenhum gatilho ter montado para funcionar.
+      await useConta.getState().carregar();
       setEstado(atual);
       if (!atual.disponivel) return setFase({ nome: "formulario" });
       if (atual.conectado && !atual.cofreAberto) return setFase({ nome: "cofre_travado" });
