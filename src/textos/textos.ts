@@ -179,6 +179,15 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.5",
+        data: "2026-10-22",
+        mudancas: [
+          ["correcao", "Os avisos da tela de Conta mostravam dois ícones emendados no começo da frase, às vezes o mesmo ícone repetido. Agora é um só, com espaço antes do texto."],
+          ["correcao", "Ainda na Conta, o campo de convidar alguém por e-mail e as faixas de aviso ficavam desalinhados das outras linhas e encostavam na borda do cartão. Agora seguem a mesma margem do resto da tela, inclusive com a janela estreita."],
+          ["correcao", "O aviso da última sincronização emendava duas frases sem ponto no meio."],
+        ],
+      },
+      {
         versao: "0.3.4",
         data: "2026-10-21",
         mudancas: [

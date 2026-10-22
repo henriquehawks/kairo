@@ -2023,7 +2023,7 @@ dependencies = [
 
 [[package]]
 name = "kairo"
-version = "0.3.4"
+version = "0.3.5"
 dependencies = [
  "getrandom 0.2.17",
  "serde",
