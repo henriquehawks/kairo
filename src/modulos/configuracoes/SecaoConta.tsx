@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Copy, KeyRound, LogOut, RefreshCw, ShieldCheck, Trash2, TriangleAlert } from "lucide-react";
+import { Copy, LogOut, RefreshCw, Trash2 } from "lucide-react";
 import { AvisoFaixa, Botao, Campo, ConfirmarModal, Modal } from "../../componentes/basicos";
 import { GrupoAjuste, LinhaAjuste, NotaAjuste } from "./LinhaAjuste";
 import { conta as ponteDaConta, type EstadoDaConta, type PainelDoAdmin, type PessoaDoKairo } from "../../ponte/ponteLocal";
@@ -91,7 +91,7 @@ export function SecaoConta() {
   if (fase.nome === "codigo") {
     return (
       <>
-        <AvisoFaixa tipo="alerta"><KeyRound size={14} />{C.codigoTitulo}</AvisoFaixa>
+        <AvisoFaixa tipo="alerta">{C.codigoTitulo}</AvisoFaixa>
         <NotaAjuste><p className="ajuste-nota-texto">{C.codigoDica}</p></NotaAjuste>
         <LinhaAjuste rotulo={C.codigo}>
           <code className="ajuste-valor-fixo conta-codigo">{fase.codigo}</code>
@@ -127,7 +127,7 @@ export function SecaoConta() {
   if (fase.nome === "cofre_travado") {
     return (
       <>
-        <AvisoFaixa tipo="erro"><TriangleAlert size={14} />{C.cofreTravado}</AvisoFaixa>
+        <AvisoFaixa tipo="erro">{C.cofreTravado}</AvisoFaixa>
         <NotaAjuste><p className="ajuste-nota-texto">{C.cofreTravadoDica}</p></NotaAjuste>
         <Campo id="conta-codigo" rotulo={C.codigo} erro={erro}>
           <input id="conta-codigo" className="campo" value={codigo} maxLength={40} autoComplete="off" spellCheck={false} onChange={(e) => setCodigo(e.target.value)} />
@@ -192,7 +192,7 @@ function Conectado({ email, admin, ocupado, aoSair }: { email: string; admin: bo
 
   return (
     <>
-      <AvisoFaixa tipo="info"><ShieldCheck size={14} />{C.conectadoComo} {email}</AvisoFaixa>
+      <AvisoFaixa tipo="info">{C.conectadoComo} {email}</AvisoFaixa>
       {erroDaSincronia && <AvisoFaixa tipo="erro">{C.erros[erroDaSincronia] ?? C.erros.falha_na_conta}</AvisoFaixa>}
       <NotaAjuste><p className="ajuste-nota-texto">{C.explicacao}</p></NotaAjuste>
 
@@ -207,7 +207,6 @@ function Conectado({ email, admin, ocupado, aoSair }: { email: string; admin: bo
 
       {ultima && ultima.conflitos.length > 0 && (
         <AvisoFaixa tipo="alerta">
-          <TriangleAlert size={14} />
           {C.houveConflito(ultima.conflitos.map((c) => c.replace(/^niko:/, "")).join(", "))}
         </AvisoFaixa>
       )}

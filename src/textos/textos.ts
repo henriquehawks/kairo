@@ -2812,7 +2812,7 @@ export const T = {
       sincronizar: "Sincronizar agora",
       sincronizando: "Sincronizando…",
       nuncaSincronizou: "Ainda não sincronizou nesta máquina.",
-      ultimaSincronia: (quando: string) => `Última sincronização: ${quando}`,
+      ultimaSincronia: (quando: string) => `Última sincronização: ${quando}.`,
       resumoDaSincronia: (baixadas: number, enviadas: number) =>
         baixadas === 0 && enviadas === 0
           ? "Nada mudou desde a última vez."

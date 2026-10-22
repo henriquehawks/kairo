@@ -253,6 +253,17 @@
   border-bottom: 1px solid var(--linha);
 }
 
+/* Campo e faixa soltos na seção (a Conta usa os dois) seguem a sangria das linhas. */
+.estilo-sistema .ajustes-corpo > .campo-grupo {
+  gap: 8px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.estilo-sistema .ajustes-corpo > .aviso-faixa {
+  margin: 16px 22px;
+}
+
 .estilo-sistema .ajuste-nota-texto {
   margin: 0;
   font-size: 12.5px;
@@ -737,9 +748,15 @@
 
   .estilo-sistema .ajustes-cartao-cabecalho,
   .estilo-sistema .ajuste-linha,
+  .estilo-sistema .ajustes-corpo > .campo-grupo,
   .estilo-sistema .ajuste-nota {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .estilo-sistema .ajustes-corpo > .aviso-faixa {
+    margin-left: 16px;
+    margin-right: 16px;
   }
 
   .estilo-sistema .ajuste-grupo,
