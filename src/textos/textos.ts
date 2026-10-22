@@ -179,6 +179,14 @@ export const T = {
     tiposDeMudanca: { novo: "Novo", melhoria: "Melhoria", correcao: "Correção" },
     historico: [
       {
+        versao: "0.3.4",
+        data: "2026-10-21",
+        mudancas: [
+          ["melhoria", "A conta passa a ser só para convidados. Se você tentar criar uma e receber um erro dizendo que o e-mail não foi convidado, fale com o Henrique — o Kairo é feito para um grupo pequeno de pessoas."],
+          ["melhoria", "Quem já tem conta continua com ela normalmente. E a conta segue opcional: o Kairo funciona inteiro sem ela, guardando tudo no seu próprio computador."],
+        ],
+      },
+      {
         versao: "0.3.3",
         data: "2026-10-21",
         mudancas: [
