@@ -214,6 +214,7 @@ export interface EstadoDaConta {
   email?: string;
   cofreAberto?: boolean;
   configurada?: boolean;
+  admin?: boolean;
 }
 
 export type ResultadoDeEntrada =
@@ -230,6 +231,23 @@ export interface ResultadoDaSincronizacao {
   backup?: string;
 }
 
+export interface PessoaDoKairo {
+  usuario_id: string;
+  email: string;
+  criado: string;
+  ultimo_acesso: string | null;
+  confirmado: boolean;
+  areas: number;
+  bytes: number;
+  ultima_sincronia: string | null;
+}
+
+export interface PainelDoAdmin {
+  resumo: { pessoas: number; com_dados: number; ativos_7d: number; bytes: number } | null;
+  pessoas: PessoaDoKairo[];
+  convidados: string[];
+}
+
 /** A senha digitada nunca sai desta chamada: quem deriva e cifra é a ponte. */
 export const conta = {
   estado: () => pedir<EstadoDaConta>("/conta"),
@@ -239,6 +257,13 @@ export const conta = {
   redefinir: (email: string) => enviar<{ ok: true }>("/conta/redefinir", { email }),
   sair: () => enviar<{ ok: true }>("/conta/sair", {}),
   sincronizar: (escolha?: "subir" | "baixar") => enviar<ResultadoDaSincronizacao>("/conta/sincronizar", { escolha }),
+  admin: {
+    painel: () => pedir<PainelDoAdmin>("/conta/admin"),
+    apagar: (usuarioId: string) => enviar<{ ok: true }>("/conta/admin/apagar", { usuarioId }),
+    senha: (usuarioId: string, senha: string) => enviar<{ ok: true }>("/conta/admin/senha", { usuarioId, senha }),
+    convidar: (email: string) => enviar<{ ok: true }>("/conta/admin/convidar", { email }),
+    desconvidar: (email: string) => enviar<{ ok: true }>("/conta/admin/desconvidar", { email }),
+  },
 };
 
 export const controle = {

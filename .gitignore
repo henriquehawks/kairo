@@ -84,3 +84,7 @@ logs/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Estado local da CLI da Supabase
+supabase/.temp/
+supabase/.branches/

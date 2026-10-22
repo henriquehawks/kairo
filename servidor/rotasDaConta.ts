@@ -1,6 +1,6 @@
 import { CONTA_LIBERADA } from "./configuracaoDaConta.ts";
 import { ErroDaConta } from "./contaSupabase.ts";
-import { cadastrar, destravarComCodigo, entrar, estadoDaConta, pedirRedefinicaoDeSenha, sair, type Dependencias } from "./conta.ts";
+import { apagarUsuario, cadastrar, convidar, desconvidar, destravarComCodigo, entrar, estadoDaConta, lerConvidados, painelDoAdmin, pedirRedefinicaoDeSenha, sair, trocarSenhaDe, type Dependencias } from "./conta.ts";
 import { sincronizar } from "./sincronizacao.ts";
 
 /**
@@ -55,6 +55,27 @@ export async function responderConta(caminho: string, metodo: string, corpo: Rec
     if (caminho === "/conta/sincronizar" && metodo === "POST") {
       const escolha = corpo.escolha === "subir" || corpo.escolha === "baixar" ? corpo.escolha : undefined;
       return { status: 200, corpo: await sincronizar({ banco: texto(corpo.banco), escolha, deps }) };
+    }
+    // Nenhuma destas confia no app: quem confere a permissão é o Postgres, nas
+    // funções do esquema, e a Edge Function, que lê o e-mail de dentro do token.
+    if (caminho === "/conta/admin" && metodo === "GET") {
+      return { status: 200, corpo: { ...(await painelDoAdmin(deps)), convidados: await lerConvidados(deps) } };
+    }
+    if (caminho === "/conta/admin/apagar" && metodo === "POST") {
+      await apagarUsuario(texto(corpo.usuarioId), deps);
+      return { status: 200, corpo: { ok: true } };
+    }
+    if (caminho === "/conta/admin/senha" && metodo === "POST") {
+      await trocarSenhaDe(texto(corpo.usuarioId), texto(corpo.senha), deps);
+      return { status: 200, corpo: { ok: true } };
+    }
+    if (caminho === "/conta/admin/convidar" && metodo === "POST") {
+      await convidar(texto(corpo.email), deps);
+      return { status: 200, corpo: { ok: true } };
+    }
+    if (caminho === "/conta/admin/desconvidar" && metodo === "POST") {
+      await desconvidar(texto(corpo.email), deps);
+      return { status: 200, corpo: { ok: true } };
     }
     return { status: 404, corpo: { erro: "rota_desconhecida" } };
   } catch (erro) {

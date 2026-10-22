@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Copy, KeyRound, LogOut, RefreshCw, ShieldCheck, TriangleAlert } from "lucide-react";
-import { AvisoFaixa, Botao, Campo, Modal } from "../../componentes/basicos";
-import { LinhaAjuste, NotaAjuste } from "./LinhaAjuste";
-import { conta as ponteDaConta, type EstadoDaConta } from "../../ponte/ponteLocal";
+import { Copy, KeyRound, LogOut, RefreshCw, ShieldCheck, Trash2, TriangleAlert } from "lucide-react";
+import { AvisoFaixa, Botao, Campo, ConfirmarModal, Modal } from "../../componentes/basicos";
+import { GrupoAjuste, LinhaAjuste, NotaAjuste } from "./LinhaAjuste";
+import { conta as ponteDaConta, type EstadoDaConta, type PainelDoAdmin, type PessoaDoKairo } from "../../ponte/ponteLocal";
 import { T } from "../../textos/textos";
 import { useConta } from "../../estado/conta";
 import { horarioRelativo } from "../../utilitarios/datas";
@@ -149,7 +149,7 @@ export function SecaoConta() {
   }
 
   if (fase.nome === "conectado") {
-    return <Conectado email={estado.email ?? ""} ocupado={ocupado} aoSair={() => void executar(async () => { await ponteDaConta.sair(); await recarregar(); })} />;
+    return <Conectado email={estado.email ?? ""} admin={Boolean(estado.admin)} ocupado={ocupado} aoSair={() => void executar(async () => { await ponteDaConta.sair(); await recarregar(); })} />;
   }
 
   return (
@@ -180,7 +180,7 @@ export function SecaoConta() {
  * Conta conectada: estado da última sincronização, botão para forçar uma agora e o
  * diálogo do primeiro encontro, quando os dois lados têm dados.
  */
-function Conectado({ email, ocupado, aoSair }: { email: string; ocupado: boolean; aoSair: () => void }) {
+function Conectado({ email, admin, ocupado, aoSair }: { email: string; admin: boolean; ocupado: boolean; aoSair: () => void }) {
   const sincronizando = useConta((s) => s.sincronizando);
   const ultima = useConta((s) => s.ultima);
   const escolhaPendente = useConta((s) => s.escolhaPendente);
@@ -212,6 +212,8 @@ function Conectado({ email, ocupado, aoSair }: { email: string; ocupado: boolean
         </AvisoFaixa>
       )}
 
+      {admin && <Administracao email={email} />}
+
       <LinhaAjuste rotulo={C.sair} dica={C.sairDica}>
         <Botao icone={<LogOut size={13} />} disabled={ocupado || sincronizando} onClick={aoSair}>{ocupado ? C.saindo : C.sair}</Botao>
       </LinhaAjuste>
@@ -235,6 +237,125 @@ function Conectado({ email, ocupado, aoSair }: { email: string; ocupado: boolean
             <Botao onClick={() => useConta.setState({ escolhaPendente: null })}>{C.decidirDepois}</Botao>
             <Botao disabled={sincronizando} onClick={() => void sincronizar("baixar")}>{C.usarAConta}</Botao>
             <Botao variante="primario" disabled={sincronizando} onClick={() => void sincronizar("subir")}>{C.usarEste}</Botao>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
+
+const A = C.admin;
+const emKb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
+const quandoOuNunca = (iso: string | null, vazio: string) => (iso ? horarioRelativo(iso) : vazio);
+
+/**
+ * Administração. Aparece só para o e-mail do dono, mas isso é decoração: quem
+ * recusa quem não tem permissão é o Postgres, nas funções do esquema, e a Edge
+ * Function. Se alguém editar o app para mostrar esta tela, ela virá vazia.
+ */
+function Administracao({ email }: { email: string }) {
+  const [painel, setPainel] = useState<PainelDoAdmin | null>(null);
+  const [erro, setErro] = useState("");
+  const [ocupado, setOcupado] = useState(false);
+  const [convidado, setConvidado] = useState("");
+  const [apagando, setApagando] = useState<PessoaDoKairo | null>(null);
+  const [trocando, setTrocando] = useState<PessoaDoKairo | null>(null);
+  const [senhaNova, setSenhaNova] = useState("");
+
+  const carregar = useCallback(async () => {
+    try {
+      setPainel(await ponteDaConta.admin.painel());
+      setErro("");
+    } catch (falha) {
+      setErro(mensagemDoErro(falha));
+    }
+  }, []);
+
+  useEffect(() => {
+    void carregar();
+  }, [carregar]);
+
+  const agir = async (acao: () => Promise<unknown>) => {
+    if (ocupado) return;
+    setOcupado(true);
+    setErro("");
+    try {
+      await acao();
+      await carregar();
+    } catch (falha) {
+      setErro(mensagemDoErro(falha));
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  const r = painel?.resumo;
+
+  return (
+    <>
+      <GrupoAjuste titulo={A.titulo} dica={A.dica} acoes={<Botao pequeno icone={<RefreshCw size={13} />} disabled={ocupado} onClick={() => void carregar()}>{A.atualizar}</Botao>} />
+      {erro && <AvisoFaixa tipo="erro">{erro}</AvisoFaixa>}
+
+      {r && (
+        <div className="formulario-linha fin-duas">
+          <LinhaAjuste rotulo={A.pessoas}><span className="ajuste-valor-fixo numero">{r.pessoas}</span></LinhaAjuste>
+          <LinhaAjuste rotulo={A.comDados}><span className="ajuste-valor-fixo numero">{r.com_dados}</span></LinhaAjuste>
+          <LinhaAjuste rotulo={A.ativos}><span className="ajuste-valor-fixo numero">{r.ativos_7d}</span></LinhaAjuste>
+          <LinhaAjuste rotulo={A.guardado}><span className="ajuste-valor-fixo numero">{emKb(r.bytes)}</span></LinhaAjuste>
+        </div>
+      )}
+
+      {painel?.pessoas.length === 0 && <NotaAjuste><p className="ajuste-nota-texto">{A.semPessoas}</p></NotaAjuste>}
+      {painel?.pessoas.map((p) => (
+        <LinhaAjuste
+          key={p.usuario_id}
+          rotulo={p.email}
+          dica={`${A.areas(p.areas)} · ${emKb(p.bytes)} · ${quandoOuNunca(p.ultima_sincronia, A.nuncaSincronizou)}${p.confirmado ? "" : ` · ${A.naoConfirmado}`}`}
+        >
+          <Botao pequeno disabled={ocupado} onClick={() => { setSenhaNova(""); setTrocando(p); }}>{A.trocarSenha}</Botao>
+          <Botao pequeno variante="perigo" icone={<Trash2 size={13} />} disabled={ocupado || p.email === email} onClick={() => setApagando(p)}>{A.apagar}</Botao>
+        </LinhaAjuste>
+      ))}
+
+      <GrupoAjuste titulo={A.convidados} dica={A.convidadosDica} />
+      <Campo id="conta-convidado" rotulo={A.emailDoConvidado}>
+        <input id="conta-convidado" className="campo" type="email" value={convidado} maxLength={320} onChange={(e) => setConvidado(e.target.value)} />
+      </Campo>
+      <LinhaAjuste rotulo="">
+        <Botao variante="primario" disabled={ocupado || !convidado.trim()} onClick={() => void agir(async () => { await ponteDaConta.admin.convidar(convidado); setConvidado(""); })}>{A.convidar}</Botao>
+      </LinhaAjuste>
+      {painel?.convidados.map((convidadoEmail) => (
+        <LinhaAjuste key={convidadoEmail} rotulo={convidadoEmail}>
+          <Botao pequeno variante="fantasma" disabled={ocupado || convidadoEmail === email} onClick={() => void agir(() => ponteDaConta.admin.desconvidar(convidadoEmail))}>{A.remover}</Botao>
+        </LinhaAjuste>
+      ))}
+
+      <ConfirmarModal
+        aberto={apagando !== null}
+        titulo={A.apagarTitulo}
+        texto={apagando ? A.apagarTexto(apagando.email) : ""}
+        rotuloConfirmar={A.apagar}
+        aoFechar={() => setApagando(null)}
+        aoConfirmar={() => {
+          const alvo = apagando;
+          setApagando(null);
+          if (alvo) void agir(() => ponteDaConta.admin.apagar(alvo.usuario_id));
+        }}
+      />
+
+      <Modal aberto={trocando !== null} titulo={A.trocarSenhaTitulo} aoFechar={() => setTrocando(null)}>
+        <div className="formulario">
+          <p className="ajuste-nota-texto">{A.trocarSenhaTexto}</p>
+          <Campo id="conta-senha-admin" rotulo={A.novaSenha}>
+            <input id="conta-senha-admin" className="campo" type="password" value={senhaNova} maxLength={200} onChange={(e) => setSenhaNova(e.target.value)} />
+          </Campo>
+          <div className="formulario-acoes">
+            <Botao onClick={() => setTrocando(null)}>{T.geral.cancelar}</Botao>
+            <Botao variante="primario" disabled={senhaNova.length < 8} onClick={() => {
+              const alvo = trocando;
+              setTrocando(null);
+              if (alvo) void agir(() => ponteDaConta.admin.senha(alvo.usuario_id, senhaNova));
+            }}>{A.trocarSenha}</Botao>
           </div>
         </div>
       </Modal>

@@ -172,7 +172,7 @@ export async function sair(deps = dependenciasPadrao()): Promise<void> {
   await esquecer(deps);
 }
 
-export async function estadoDaConta(deps = dependenciasPadrao()): Promise<{ conectado: boolean; email: string; cofreAberto: boolean; configurada: boolean }> {
+export async function estadoDaConta(deps = dependenciasPadrao()): Promise<{ conectado: boolean; email: string; cofreAberto: boolean; configurada: boolean; admin: boolean }> {
   const sessao = await lerSessaoGuardada(deps);
   const chave = await lerChaveGuardada(deps);
   return {
@@ -180,5 +180,67 @@ export async function estadoDaConta(deps = dependenciasPadrao()): Promise<{ cone
     email: sessao?.email ?? "",
     cofreAberto: Boolean(sessao && chave),
     configurada: servidorDaConta.configuracaoValida(deps.cfg),
+    // Só para a interface decidir se mostra a tela. A permissão real é do banco.
+    admin: Boolean(sessao && ehAdministrador(sessao.email)),
   };
+}
+
+/**
+ * Administração.
+ *
+ * O e-mail abaixo serve só para a interface saber se mostra a tela. Quem decide
+ * de verdade é o banco, nas funções `e_admin()` e na Edge Function — o app roda
+ * na máquina das pessoas e qualquer verificação feita aqui pode ser editada.
+ */
+export const EMAIL_DO_ADMIN = "henrique.coruja@grupolana.com.br";
+
+export function ehAdministrador(email: string): boolean {
+  return email.trim().toLowerCase() === EMAIL_DO_ADMIN;
+}
+
+async function comSessao(deps: Dependencias): Promise<servidorDaConta.Sessao> {
+  const sessao = await sessaoValida(deps);
+  if (!sessao) throw new servidorDaConta.ErroDaConta("sem_sessao");
+  return sessao;
+}
+
+export async function painelDoAdmin(deps = dependenciasPadrao()): Promise<{ resumo: servidorDaConta.ResumoDoKairo | null; pessoas: servidorDaConta.PessoaDoKairo[] }> {
+  const sessao = await comSessao(deps);
+  const [resumo, pessoas] = await Promise.all([
+    servidorDaConta.lerResumo(deps.cfg, deps.buscar, sessao),
+    servidorDaConta.lerPessoas(deps.cfg, deps.buscar, sessao),
+  ]);
+  return { resumo, pessoas };
+}
+
+export async function apagarUsuario(usuarioId: string, deps = dependenciasPadrao()): Promise<void> {
+  const sessao = await comSessao(deps);
+  await servidorDaConta.administrar(deps.cfg, deps.buscar, sessao, { acao: "apagar", usuarioId });
+}
+
+/**
+ * Troca a senha de login de alguém. Não reabre o cofre dessa pessoa: os dados
+ * dela continuam embrulhados na senha antiga, e só o código de recuperação
+ * destranca. Serve para devolver o acesso à conta, não aos dados.
+ */
+export async function trocarSenhaDe(usuarioId: string, senha: string, deps = dependenciasPadrao()): Promise<void> {
+  if (senha.length < 8) throw new servidorDaConta.ErroDaConta("senha_curta");
+  const sessao = await comSessao(deps);
+  await servidorDaConta.administrar(deps.cfg, deps.buscar, sessao, { acao: "senha", usuarioId, senha });
+}
+
+export async function convidar(email: string, deps = dependenciasPadrao()): Promise<void> {
+  if (!emailValido(email)) throw new servidorDaConta.ErroDaConta("email_invalido");
+  const sessao = await comSessao(deps);
+  await servidorDaConta.gravarConvidado(deps.cfg, deps.buscar, sessao, email.trim().toLowerCase());
+}
+
+export async function desconvidar(email: string, deps = dependenciasPadrao()): Promise<void> {
+  const sessao = await comSessao(deps);
+  await servidorDaConta.apagarConvidado(deps.cfg, deps.buscar, sessao, email.trim().toLowerCase());
+}
+
+export async function lerConvidados(deps = dependenciasPadrao()): Promise<string[]> {
+  const sessao = await comSessao(deps);
+  return servidorDaConta.lerConvidados(deps.cfg, deps.buscar, sessao);
 }

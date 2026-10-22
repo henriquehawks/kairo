@@ -190,3 +190,66 @@ export async function gravarValores(cfg: ConfiguracaoDaConta, buscar: Buscar, se
 export async function pedirRedefinicaoDeSenha(cfg: ConfiguracaoDaConta, buscar: Buscar, email: string): Promise<void> {
   await pedir(cfg, buscar, "/auth/v1/recover", { method: "POST", corpo: { email } });
 }
+
+export interface PessoaDoKairo {
+  usuario_id: string;
+  email: string;
+  criado: string;
+  ultimo_acesso: string | null;
+  confirmado: boolean;
+  areas: number;
+  bytes: number;
+  ultima_sincronia: string | null;
+}
+
+export interface ResumoDoKairo {
+  pessoas: number;
+  com_dados: number;
+  ativos_7d: number;
+  bytes: number;
+}
+
+/**
+ * Chama uma função do banco. Quem confere se o chamador é administrador é a
+ * própria função, no Postgres — o app manda só o token da pessoa.
+ */
+async function rpc(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao, nome: string): Promise<unknown> {
+  return pedir(cfg, buscar, `/rest/v1/rpc/${nome}`, { method: "POST", token: sessao.token, corpo: {} });
+}
+
+export async function lerResumo(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao): Promise<ResumoDoKairo | null> {
+  const corpo = await rpc(cfg, buscar, sessao, "resumo_do_kairo");
+  const linha = Array.isArray(corpo) ? corpo[0] : corpo;
+  return objeto(linha) ? (linha as unknown as ResumoDoKairo) : null;
+}
+
+export async function lerPessoas(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao): Promise<PessoaDoKairo[]> {
+  const corpo = await rpc(cfg, buscar, sessao, "pessoas_do_kairo");
+  return Array.isArray(corpo) ? (corpo.filter(objeto) as unknown as PessoaDoKairo[]) : [];
+}
+
+/**
+ * Chama a Edge Function, que roda no servidor da Supabase e guarda a chave
+ * secreta lá. Ela confere o e-mail do token antes de qualquer coisa.
+ */
+export async function administrar(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao, corpo: Record<string, unknown>): Promise<unknown> {
+  return pedir(cfg, buscar, "/functions/v1/administrar", { method: "POST", token: sessao.token, corpo });
+}
+
+export async function lerConvidados(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao): Promise<string[]> {
+  const corpo = await pedir(cfg, buscar, "/rest/v1/convidados?select=email&order=convidado.desc", { method: "GET", token: sessao.token });
+  return Array.isArray(corpo) ? corpo.flatMap((l) => (objeto(l) && typeof l.email === "string" ? [l.email] : [])) : [];
+}
+
+export async function gravarConvidado(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao, email: string): Promise<void> {
+  await pedir(cfg, buscar, "/rest/v1/convidados", {
+    method: "POST",
+    token: sessao.token,
+    extras: { prefer: "resolution=merge-duplicates,return=minimal" },
+    corpo: { email },
+  });
+}
+
+export async function apagarConvidado(cfg: ConfiguracaoDaConta, buscar: Buscar, sessao: Sessao, email: string): Promise<void> {
+  await pedir(cfg, buscar, `/rest/v1/convidados?email=eq.${encodeURIComponent(email)}`, { method: "DELETE", token: sessao.token });
+}

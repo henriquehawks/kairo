@@ -1,0 +1,14 @@
+# Raiz do projeto para a CLI da Supabase.
+#
+# Sem este arquivo, `supabase functions deploy` não reconhece a pasta e vai
+# procurar a função num diretório que não tem nada.
+#
+# Publicar, a partir da raiz do repositório:
+#   supabase functions deploy administrar
+project_id = "xerqmavfotkfomwnfens"
+
+[functions.administrar]
+# A função confere o token por conta própria e recusa quem não for o
+# administrador. A verificação automática fica desligada para a resposta de
+# recusa ser a nossa, em português, e não a genérica do gateway.
+verify_jwt = false

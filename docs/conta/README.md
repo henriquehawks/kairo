@@ -88,6 +88,31 @@ protege os dados é a RLS, e por cima dela a criptografia.
 
 **A chave `sb_secret_` nunca entra no repositório.** Ela ignora a RLS.
 
+## Publicar a Edge Function
+
+A função `administrar` apaga usuário e troca senha — operações que exigem a chave
+secreta. Ela roda nos servidores da Supabase justamente para a chave não precisar
+entrar no app instalado, de onde qualquer pessoa conseguiria extraí-la.
+
+A partir da **raiz do repositório**, que é onde está o `supabase/config.toml` — sem
+ele a CLI procura a função numa pasta temporária que não tem nada:
+
+```powershell
+npm i -g supabase
+supabase login
+supabase link --project-ref xerqmavfotkfomwnfens
+supabase functions deploy administrar
+```
+
+Conferir se subiu, sem efeito colateral: sem token, tem que responder **401**, não 404.
+
+```powershell
+curl.exe -s -o NUL -w "%{http_code}" -X POST "https://xerqmavfotkfomwnfens.supabase.co/functions/v1/administrar" -H "apikey: SUA_CHAVE_PUBLICAVEL" -H "content-type: application/json" -d "{}"
+```
+
+Enquanto ela não estiver publicada, o painel mostra as estatísticas normalmente —
+elas vêm do banco — mas apagar e trocar senha falham.
+
 ## O projeto pausa sozinho
 
 Projeto grátis é pausado depois de uma semana sem atividade no banco. O workflow
